@@ -225,7 +225,7 @@ export function newLocalizationBug({
 }
 
 export function pontoonAddonWiki(): string {
-  return 'https://github.com/MikkCZ/pontoon-addon/wiki';
+  return 'https://github.com/mozilla-l10n/pontoon-addon/wiki';
 }
 
 export function pontoonAddonAmoPage(): string {
