@@ -18,7 +18,7 @@ Apart from the selected Pontoon server, Pontoon Add-on downloads data from the f
 
 - flod.org
 
-More detailed information about the data downloaded by Pontoon Add-on can be found on the [Data sources](https://github.com/MikkCZ/pontoon-addon/wiki/Data) page. You are also welcome to read the [terms and policies](https://pontoon.mozilla.org/terms/) of the default Pontoon server.
+More detailed information about the data downloaded by Pontoon Add-on can be found on the [Data sources](https://github.com/mozilla-l10n/pontoon-addon/wiki/Data) page. You are also welcome to read the [terms and policies](https://pontoon.mozilla.org/terms/) of the default Pontoon server.
 
 **Storing data**
 

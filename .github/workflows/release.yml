@@ -109,7 +109,7 @@ jobs:
           name: ${{ needs.build.outputs.production_artifact_name }}
           path: dist
       - name: Download source code archive
-        run: wget 'https://github.com/MikkCZ/pontoon-addon/archive/refs/tags/${{ needs.bump_version_and_tag.outputs.release_tag }}.zip'
+        run: wget 'https://github.com/mozilla-l10n/pontoon-addon/archive/refs/tags/${{ needs.bump_version_and_tag.outputs.release_tag }}.zip'
       - name: Publish to addons.mozilla.org
         env:
           WEB_EXT_API_KEY: ${{ secrets.WEB_EXT_API_KEY }}
