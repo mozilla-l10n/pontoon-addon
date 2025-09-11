@@ -10,6 +10,9 @@
 
 Pontoon Add-on is an add-on integrating [Pontoon](https://pontoon.mozilla.org/) into your browser. The aim is to ease localization work and provide tools beyond what a web app can do.
 
+The add-on was originally developed as a personal project by [Michal Stanke](https://people.mozilla.org/p/mstanke/),
+and is now maintained by the Mozilla localization team.
+
 ## How to install & use
 
 This add-on is a WebExtension and works in multiple browsers. It's primarily developed for Firefox and occasionally tested in the Chromium browser, so it should work in Chrome, Edge, Brave etc. Please read the [wiki](https://github.com/mozilla-l10n/pontoon-addon/wiki), how to install and use it.
