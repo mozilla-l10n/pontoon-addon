@@ -19,8 +19,8 @@ import {
   bugzillaTeamComponents,
 } from './apiEndpoints';
 import { httpClient } from './httpClients/httpClient';
-import type { GetProjectsInfoResponse } from './httpClients/pontoonGraphqlClient';
-import { pontoonGraphqlClient } from './httpClients/pontoonGraphqlClient';
+import type { GetProjectsInfoResponse } from './httpClients/pontoonRestClient';
+import { pontoonRestClient } from './httpClients/pontoonRestClient';
 import { pontoonHttpClient } from './httpClients/pontoonHttpClient';
 import { projectsListData } from './data/projectsListData';
 
@@ -142,10 +142,10 @@ async function updateNotificationsIfThereAreNew(pageContent: string) {
 
 async function updateNotificationsData() {
   try {
-    const reponse = await pontoonHttpClient.fetchFromPontoonSession(
+    const response = await pontoonHttpClient.fetchFromPontoonSession(
       pontoonUserData(await getOneOption('pontoon_base_url')),
     );
-    const userData = (await reponse.json()) as UserDataApiResponse;
+    const userData = (await response.json()) as UserDataApiResponse;
     const notificationsData: StorageContent['notificationsData'] = {};
     for (const notification of userData.notifications.notifications) {
       notificationsData[notification.id] = {
@@ -197,42 +197,49 @@ async function updateLatestTeamActivity() {
 
 async function updateTeamsList(): Promise<StorageContent['teamsList']> {
   const [pontoonData, bugzillaComponentsResponse] = await Promise.all([
-    pontoonGraphqlClient.getTeamsInfo(),
+    pontoonRestClient.getTeamsInfo(),
     httpClient.fetch(bugzillaTeamComponents()),
   ]);
+  console.log(pontoonData.locales);
   const bugzillaComponents = (await bugzillaComponentsResponse.json()) as {
     [code: string]: string;
   };
   const sortedTeams = pontoonData.locales
-    .filter((team) => team.totalStrings > 0)
+    .filter((team) => team.total_strings > 0)
     .sort((team1, team2) => team1.code.localeCompare(team2.code));
   const teamsList: StorageContent['teamsList'] = {};
+
+  console.log(sortedTeams);
   for (const team of sortedTeams) {
     teamsList[team.code] = {
       code: team.code,
       name: team.name,
       strings: {
-        approvedStrings: team.approvedStrings,
-        pretranslatedStrings: team.pretranslatedStrings,
-        stringsWithWarnings: team.stringsWithWarnings,
-        stringsWithErrors: team.stringsWithErrors,
-        missingStrings: team.missingStrings,
-        unreviewedStrings: team.unreviewedStrings,
-        totalStrings: team.totalStrings,
+        approvedStrings: team.approved_strings,
+        pretranslatedStrings: team.pretranslated_strings,
+        stringsWithWarnings: team.strings_with_warnings,
+        stringsWithErrors: team.strings_with_errors,
+        missingStrings: team.missing_strings,
+        unreviewedStrings: team.unreviewed_strings,
+        totalStrings: team.total_strings,
       },
       bz_component: bugzillaComponents[team.code],
     };
   }
   await saveToStorage({ teamsList });
+
+  console.log('Constructed teamsList:', teamsList);
+
   return teamsList;
 }
 
 async function updateProjectsList(): Promise<StorageContent['projectsList']> {
-  const pontoonData = await pontoonGraphqlClient.getProjectsInfo();
+  const pontoonData = await pontoonRestClient.getProjectsInfo();
   const partialProjectsMap = new Map<
     GetProjectsInfoProject['slug'],
     GetProjectsInfoProject
   >();
+  console.log(pontoonData.projects);
   for (const project of pontoonData.projects) {
     partialProjectsMap.set(project.slug, project);
   }
@@ -244,6 +251,7 @@ async function updateProjectsList(): Promise<StorageContent['projectsList']> {
   for (const project of projects) {
     projectsList[project.slug] = project;
   }
+  console.log('Constructed projectsList:', projectsList);
   await saveToStorage({ projectsList });
   return projectsList;
 }

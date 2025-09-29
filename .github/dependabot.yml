@@ -9,10 +9,6 @@ updates:
     commit-message:
       prefix: "fix"
     groups:
-      graphql:
-        patterns:
-          - "graphql*"
-          - "@graphql-codegen/*"
       lint:
         patterns:
           - "*eslint*"
