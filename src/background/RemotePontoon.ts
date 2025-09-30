@@ -200,7 +200,6 @@ async function updateTeamsList(): Promise<StorageContent['teamsList']> {
     pontoonRestClient.getTeamsInfo(),
     httpClient.fetch(bugzillaTeamComponents()),
   ]);
-  console.log(pontoonData.locales);
   const bugzillaComponents = (await bugzillaComponentsResponse.json()) as {
     [code: string]: string;
   };
@@ -209,7 +208,6 @@ async function updateTeamsList(): Promise<StorageContent['teamsList']> {
     .sort((team1, team2) => team1.code.localeCompare(team2.code));
   const teamsList: StorageContent['teamsList'] = {};
 
-  console.log(sortedTeams);
   for (const team of sortedTeams) {
     teamsList[team.code] = {
       code: team.code,
@@ -228,8 +226,6 @@ async function updateTeamsList(): Promise<StorageContent['teamsList']> {
   }
   await saveToStorage({ teamsList });
 
-  console.log('Constructed teamsList:', teamsList);
-
   return teamsList;
 }
 
@@ -239,7 +235,6 @@ async function updateProjectsList(): Promise<StorageContent['projectsList']> {
     GetProjectsInfoProject['slug'],
     GetProjectsInfoProject
   >();
-  console.log(pontoonData.projects);
   for (const project of pontoonData.projects) {
     partialProjectsMap.set(project.slug, project);
   }
@@ -251,7 +246,6 @@ async function updateProjectsList(): Promise<StorageContent['projectsList']> {
   for (const project of projects) {
     projectsList[project.slug] = project;
   }
-  console.log('Constructed projectsList:', projectsList);
   await saveToStorage({ projectsList });
   return projectsList;
 }
