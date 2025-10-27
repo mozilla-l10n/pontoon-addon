@@ -115,6 +115,7 @@ export async function refreshData(context: {
   await Promise.all([
     updateNotificationsData(),
     updateLatestTeamActivity(),
+    updateTeam(),
     updateTeamsList(),
     updateProjectsList(),
   ]);
@@ -195,6 +196,36 @@ async function updateLatestTeamActivity() {
   }
 }
 
+async function updateTeam(): Promise<StorageContent['team']> {
+  const [teamCode] = await Promise.all([getOneOption('locale_team')]);
+    
+  const [pontoonData, bugzillaComponentsResponse] = await Promise.all([
+    pontoonRestClient.getTeamInfo(teamCode),
+    httpClient.fetch(bugzillaTeamComponents()),
+  ])
+  const bugzillaComponents = (await bugzillaComponentsResponse.json()) as {
+    [code: string]: string;
+  };
+
+  const team: StorageContent['team'] = {
+    code: pontoonData.code,
+    name: pontoonData.name,
+    strings: {
+      approvedStrings: pontoonData.approved_strings,
+      pretranslatedStrings: pontoonData.pretranslated_strings,
+      stringsWithWarnings: pontoonData.strings_with_warnings,
+      stringsWithErrors: pontoonData.strings_with_errors,
+      missingStrings: pontoonData.missing_strings,
+      unreviewedStrings: pontoonData.unreviewed_strings,
+      totalStrings: pontoonData.total_strings,
+    },
+    bz_component: bugzillaComponents[pontoonData.code],
+  };
+
+  await saveToStorage({ team });
+  return team;
+
+}
 async function updateTeamsList(): Promise<StorageContent['teamsList']> {
   const [pontoonData, bugzillaComponentsResponse] = await Promise.all([
     pontoonRestClient.getTeamsInfo(),
@@ -289,5 +320,6 @@ async function getUsersTeamFromPontoon(): Promise<string | undefined> {
   const language = parseDOM(await response.text()).querySelector<HTMLElement>(
     '#homepage .language',
   );
+  console.log(language?.dataset['code']);
   return language?.dataset['code'];
 }
