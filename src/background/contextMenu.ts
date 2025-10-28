@@ -13,7 +13,7 @@ import {
   removeContextMenu,
   listenToStorageChange,
 } from '@commons/webExtensionsApi';
-import { getOptions, listenToOptionChange } from '@commons/options';
+import { getOneOption, listenToOptionChange } from '@commons/options';
 import type { OptionsContent } from '@commons/data/defaultOptions';
 import { openNewPontoonTab } from '@commons/utils';
 
@@ -31,28 +31,23 @@ const SELECTION_CONTEXTS: Menus.ContextType[] = ['selection'];
 
 export function init() {
   listenToStorageChange('projectsList', () => createContextMenuItems());
-  listenToStorageChange('teamsList', () => createContextMenuItems());
+  listenToStorageChange('team', () => createContextMenuItems());
   listenToOptionChange('pontoon_base_url', () => createContextMenuItems());
   listenToOptionChange('locale_team', () => createContextMenuItems());
   createContextMenuItems();
 }
 
 async function createContextMenuItems() {
-  const [
-    { pontoon_base_url: pontoonBaseUrl, locale_team: teamCode },
-    { projectsList, teamsList },
-  ] = await Promise.all([
-    getOptions(['pontoon_base_url', 'locale_team']),
-    getFromStorage(['projectsList', 'teamsList']),
+  const [pontoonBaseUrl, { projectsList, team }] = await Promise.all([
+    getOneOption('pontoon_base_url'),
+    getFromStorage(['projectsList', 'team']),
   ]);
+
   if (
     typeof projectsList === 'object' &&
     Object.values(projectsList).length > 0 &&
-    typeof teamsList === 'object' &&
-    typeof teamsList[teamCode] === 'object'
+    typeof team === 'object'
   ) {
-    const team = teamsList[teamCode];
-
     const parentContextMenuId = await recreateContextMenu({
       id: 'page-context-menu-parent',
       title: 'Pontoon Add-on',
@@ -79,7 +74,7 @@ async function createContextMenuItems() {
 
 function contextMenuItemsForProject(
   project: StorageContent['projectsList'][string],
-  team: StorageContent['teamsList'][string],
+  team: StorageContent['team'],
   pontoonBaseUrl: OptionsContent['pontoon_base_url'],
 ): ContextMenuItemProperties[] {
   const documentUrlPatterns = project.domains.map(

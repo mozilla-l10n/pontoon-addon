@@ -38,6 +38,9 @@ export function init() {
   registerClickAction();
 
   addContextMenu();
+  listenToOptionChange('locale_team', async () => {
+    await recreateContextMenu();
+  });
 }
 
 async function registerBadgeChanges() {
@@ -182,6 +185,7 @@ async function setBadge(data: { text: string; title: string; color: string }) {
 
 async function addContextMenu() {
   const localeTeam = await getOneOption('locale_team');
+  const pontoonBaseUrl = await getOneOption('pontoon_base_url');
   createContextMenu({
     title: 'Reload notifications',
     contexts: ['browser_action'],
@@ -197,39 +201,33 @@ async function addContextMenu() {
   const localeTeamMenuItems: Menus.CreateCreatePropertiesType[] = [
     {
       title: 'Dashboard',
-      onclick: async () => {
-        const { pontoon_base_url: pontoonBaseUrl, locale_team: teamCode } =
-          await getOptions(['pontoon_base_url', 'locale_team']);
-        openNewPontoonTab(pontoonTeam(pontoonBaseUrl, { code: teamCode }));
+      onclick: () => {
+        openNewPontoonTab(pontoonTeam(pontoonBaseUrl, { code: localeTeam }));
       },
     },
     {
       title: 'Insights',
-      onclick: async () => {
-        const { pontoon_base_url: pontoonBaseUrl, locale_team: teamCode } =
-          await getOptions(['pontoon_base_url', 'locale_team']);
+      onclick: () => {
         openNewPontoonTab(
-          pontoonTeamInsights(pontoonBaseUrl, { code: teamCode }),
+          pontoonTeamInsights(pontoonBaseUrl, { code: localeTeam }),
         );
       },
     },
     {
       title: 'Bugs',
-      onclick: async () => {
-        const { pontoon_base_url: pontoonBaseUrl, locale_team: teamCode } =
-          await getOptions(['pontoon_base_url', 'locale_team']);
-        openNewPontoonTab(pontoonTeamBugs(pontoonBaseUrl, { code: teamCode }));
+      onclick: () => {
+        openNewPontoonTab(
+          pontoonTeamBugs(pontoonBaseUrl, { code: localeTeam }),
+        );
       },
     },
     {
       title: 'Search',
-      onclick: async () => {
-        const { pontoon_base_url: pontoonBaseUrl, locale_team: teamCode } =
-          await getOptions(['pontoon_base_url', 'locale_team']);
+      onclick: () => {
         openNewPontoonTab(
           pontoonProjectTranslationView(
             pontoonBaseUrl,
-            { code: teamCode },
+            { code: localeTeam },
             { slug: 'all-projects' },
           ),
         );
@@ -246,13 +244,11 @@ async function addContextMenu() {
 
   createContextMenu({
     title: 'Pontoon search',
-    onclick: async () => {
-      const { pontoon_base_url: pontoonBaseUrl, locale_team: teamCode } =
-        await getOptions(['pontoon_base_url', 'locale_team']);
+    onclick: () => {
       openNewPontoonTab(
         pontoonProjectTranslationView(
           pontoonBaseUrl,
-          { code: teamCode },
+          { code: localeTeam },
           { slug: 'all-projects' },
         ),
       );
@@ -309,4 +305,9 @@ async function addContextMenu() {
       parentId: pontoonAddonParentItemId,
     });
   }
+}
+
+async function recreateContextMenu() {
+  await browser.contextMenus.removeAll();
+  await addContextMenu();
 }

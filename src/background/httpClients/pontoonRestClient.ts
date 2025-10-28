@@ -5,10 +5,10 @@ interface GetTeamsInfoResponse {
 }
 
 interface PaginatedResponse<T> {
-  count: number,
-  next: string | null,
-  previous: string | null,
-  results: T[]
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
 }
 
 interface GetTeamInfoResponse {
@@ -39,30 +39,26 @@ export const pontoonRestClient = {
     const baseUrl = await getPontoonBaseUrl();
     const response = await fetch(`${baseUrl}/api/v2/locales/${locale_code}`);
     const team = await response.json();
-  
-    console.log(team)
+    console.log(team);
     return team as GetTeamInfoResponse;
-
   },
   getTeamsInfo: async (): Promise<GetTeamsInfoResponse> => {
-
-    const teams: GetTeamsInfoResponse = { locales: []};
+    const teams: GetTeamsInfoResponse = { locales: [] };
     const baseUrl = await getPontoonBaseUrl();
-    let url = `${baseUrl}/api/v2/locales/`
+    let url = `${baseUrl}/api/v2/locales/`;
 
     while (url) {
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`${response.status}`);
       }
-  
-      const data: PaginatedResponse<GetTeamInfoResponse> = await response.json();
+
+      const data: PaginatedResponse<GetTeamInfoResponse> =
+        await response.json();
       teams.locales.push(...data.results);
-      url = data.next || "";
+      url = data.next || '';
     }
-    
-    console.log(teams)
-  
+    console.log(teams);
     return teams;
   },
   getProjectsInfo: async (): Promise<GetProjectsInfoResponse> => {

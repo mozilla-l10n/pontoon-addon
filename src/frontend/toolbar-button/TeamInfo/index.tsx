@@ -98,7 +98,7 @@ const Code: React.FC<React.ComponentProps<'span'>> = (props) => (
 const STRING_CATEGORIES: Array<{
   status: string;
   label: React.ComponentProps<typeof TeamInfoListItem>['label'];
-  dataProperty: keyof StorageContent['teamsList'][string]['strings'];
+  dataProperty: keyof StorageContent['team']['strings'];
   labelBeforeStyle?: React.ComponentProps<
     typeof TeamInfoListItem
   >['squareStyle'];
@@ -158,7 +158,7 @@ async function openNewPontoonTabAndClosePopup(url: string): Promise<void> {
 export const TeamInfo: React.FC = () => {
   const [projectForCurrentTab, setProjectForCurrentTab] =
     useState<StorageContent['projectsList'][string]>();
-  const [team, setTeam] = useState<StorageContent['teamsList'][string]>();
+  const [team, setTeam] = useState<StorageContent['team']>();
   const [teamActivity, setTeamActivity] =
     useState<StorageContent['latestTeamsActivity'][string]>();
   const [pontoonBaseUrl, setPontoonBaseUrl] =
@@ -168,16 +168,16 @@ export const TeamInfo: React.FC = () => {
     (async () => {
       const [
         projectForCurrentTab,
-        { teamsList, latestTeamsActivity },
+        { team, latestTeamsActivity },
         { locale_team: teamCode, pontoon_base_url },
       ] = await Promise.all([
         getPontoonProjectForTheCurrentTab(),
-        getFromStorage(['teamsList', 'latestTeamsActivity']),
+        getFromStorage(['team', 'latestTeamsActivity']),
         getOptions(['locale_team', 'pontoon_base_url']),
       ]);
       setProjectForCurrentTab(projectForCurrentTab);
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setTeam(teamsList![teamCode]);
+      setTeam(team!);
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setTeamActivity(latestTeamsActivity![teamCode]);
       setPontoonBaseUrl(pontoon_base_url);

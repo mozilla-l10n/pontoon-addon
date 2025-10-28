@@ -43,7 +43,7 @@ export interface StorageContent {
       totalStrings: number;
     };
     bz_component: string;
-  }
+  };
   teamsList: {
     [code: string]: {
       code: string;

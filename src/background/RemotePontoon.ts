@@ -10,7 +10,12 @@ import {
   saveToStorage,
 } from '@commons/webExtensionsApi';
 import { pontoonSettings, pontoonTeamsList } from '@commons/webLinks';
-import { getOneOption, resetDefaultOptions, setOption } from '@commons/options';
+import {
+  getOneOption,
+  listenToOptionChange,
+  resetDefaultOptions,
+  setOption,
+} from '@commons/options';
 
 import {
   AUTOMATION_UTM_SOURCE,
@@ -104,6 +109,8 @@ export async function initOptions() {
       await setOption('locale_team', teamFromPontoon);
     }
   }
+
+  listenToOptionChange('locale_team', async () => await updateTeam());
 }
 
 export async function refreshData(context: {
@@ -198,11 +205,10 @@ async function updateLatestTeamActivity() {
 
 async function updateTeam(): Promise<StorageContent['team']> {
   const [teamCode] = await Promise.all([getOneOption('locale_team')]);
-    
   const [pontoonData, bugzillaComponentsResponse] = await Promise.all([
     pontoonRestClient.getTeamInfo(teamCode),
     httpClient.fetch(bugzillaTeamComponents()),
-  ])
+  ]);
   const bugzillaComponents = (await bugzillaComponentsResponse.json()) as {
     [code: string]: string;
   };
@@ -224,7 +230,6 @@ async function updateTeam(): Promise<StorageContent['team']> {
 
   await saveToStorage({ team });
   return team;
-
 }
 async function updateTeamsList(): Promise<StorageContent['teamsList']> {
   const [pontoonData, bugzillaComponentsResponse] = await Promise.all([
