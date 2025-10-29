@@ -24,10 +24,12 @@ interface GetTeamInfoResponse {
 }
 
 export interface GetProjectsInfoResponse {
-  projects: Array<{
-    slug: string;
-    name: string;
-  }>;
+  projects: Array<GetProjectInfoResponse>;
+}
+
+interface GetProjectInfoResponse {
+  slug: string;
+  name: string;
 }
 
 async function getPontoonBaseUrl(): Promise<string> {
@@ -60,34 +62,21 @@ export const pontoonRestClient = {
     return teams;
   },
   getProjectsInfo: async (): Promise<GetProjectsInfoResponse> => {
-    let page = 1;
-    let hasMore = true;
-    const fullResponse: GetProjectsInfoResponse = { projects: [] };
+    const projects: GetProjectsInfoResponse = { projects: [] };
+    const baseUrl = await getPontoonBaseUrl();
+    let url = `${baseUrl}/api/v2/projects/`;
 
-    while (hasMore) {
-      try {
-        const baseUrl = await getPontoonBaseUrl();
-        const response = await fetch(
-          `${baseUrl}/api/v2/projects/?page=${page}`,
-        );
-        const jsonResponse = await response.json();
-
-        const data = {
-          projects: jsonResponse.results,
-        } as GetProjectsInfoResponse;
-
-        if (data.projects && data.projects.length > 0) {
-          fullResponse.projects.push(...data.projects);
-          page++;
-        } else {
-          hasMore = false;
-        }
-      } catch (error) {
-        console.error(error);
-        hasMore = false;
+    while (url) {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`${response.status}`);
       }
-    }
 
-    return fullResponse as GetProjectsInfoResponse;
+      const data: PaginatedResponse<GetProjectInfoResponse> =
+        await response.json();
+      projects.projects.push(...data.results);
+      url = data.next || '';
+    }
+    return projects;
   },
 };
