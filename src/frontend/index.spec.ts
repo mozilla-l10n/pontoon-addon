@@ -6,7 +6,7 @@ import {
   getFromStorage,
   getOneFromStorage,
 } from '@commons/webExtensionsApi';
-import { getOptions } from '@commons/options';
+import { getOneOption, getOptions } from '@commons/options';
 import { getPontoonProjectForTheCurrentTab } from '@commons/backgroundMessaging';
 
 import { render as index } from './index';
@@ -35,10 +35,20 @@ describe('address bar', () => {
       slug: 'some-project',
     });
     (getOneFromStorage as jest.Mock).mockResolvedValue({
-      cs: { name: 'Czech', bz_component: 'L10N/CS' },
+      code: 'cs',
+      name: 'Czech',
+      strings: {
+        approvedStrings: 0,
+        pretranslatedStrings: 0,
+        stringsWithWarnings: 0,
+        stringsWithErrors: 0,
+        missingStrings: 0,
+        unreviewedStrings: 3,
+        totalStrings: 72285,
+      },
+      bz_component: 'L10N/CS',
     });
-    (getOptions as jest.Mock).mockResolvedValue({
-      locale_team: 'cs',
+    (getOneOption as jest.Mock).mockResolvedValue({
       pontoon_base_url: 'https://localhost',
     });
     (getActiveTab as jest.Mock).mockResolvedValue({

@@ -325,6 +325,5 @@ async function getUsersTeamFromPontoon(): Promise<string | undefined> {
   const language = parseDOM(await response.text()).querySelector<HTMLElement>(
     '#homepage .language',
   );
-  console.log(language?.dataset['code']);
   return language?.dataset['code'];
 }

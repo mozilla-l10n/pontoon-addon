@@ -39,7 +39,6 @@ export const pontoonRestClient = {
     const baseUrl = await getPontoonBaseUrl();
     const response = await fetch(`${baseUrl}/api/v2/locales/${locale_code}`);
     const team = await response.json();
-    console.log(team);
     return team as GetTeamInfoResponse;
   },
   getTeamsInfo: async (): Promise<GetTeamsInfoResponse> => {
@@ -58,7 +57,6 @@ export const pontoonRestClient = {
       teams.locales.push(...data.results);
       url = data.next || '';
     }
-    console.log(teams);
     return teams;
   },
   getProjectsInfo: async (): Promise<GetProjectsInfoResponse> => {

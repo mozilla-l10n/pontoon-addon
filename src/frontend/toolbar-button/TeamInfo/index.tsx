@@ -9,7 +9,11 @@ import {
   getFromStorage,
   openNewTab,
 } from '@commons/webExtensionsApi';
-import { getOptions } from '@commons/options';
+import {
+  getOneOption,
+  getOptions,
+  listenToOptionChange,
+} from '@commons/options';
 import type { OptionsContent } from '@commons/data/defaultOptions';
 import {
   newLocalizationBug,
@@ -163,25 +167,45 @@ export const TeamInfo: React.FC = () => {
     useState<StorageContent['latestTeamsActivity'][string]>();
   const [pontoonBaseUrl, setPontoonBaseUrl] =
     useState<OptionsContent['pontoon_base_url']>();
+  const [teamCode, setTeamCode] = useState<OptionsContent['locale_team']>();
 
+  // Initial load
   useEffect(() => {
     (async () => {
-      const [
-        projectForCurrentTab,
-        { team, latestTeamsActivity },
-        { locale_team: teamCode, pontoon_base_url },
-      ] = await Promise.all([
-        getPontoonProjectForTheCurrentTab(),
-        getFromStorage(['team', 'latestTeamsActivity']),
-        getOptions(['locale_team', 'pontoon_base_url']),
+      const { locale_team, pontoon_base_url } = await getOptions([
+        'locale_team',
+        'pontoon_base_url',
       ]);
+      setTeamCode(locale_team);
+      setPontoonBaseUrl(pontoon_base_url);
+    })();
+  }, []);
+
+  // Load team data via teamCode change
+  useEffect(() => {
+    if (!teamCode) return;
+
+    (async () => {
+      const [projectForCurrentTab, { team, latestTeamsActivity }] =
+        await Promise.all([
+          getPontoonProjectForTheCurrentTab(),
+          getFromStorage(['team', 'latestTeamsActivity']),
+        ]);
       setProjectForCurrentTab(projectForCurrentTab);
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setTeam(team!);
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setTeamActivity(latestTeamsActivity![teamCode]);
-      setPontoonBaseUrl(pontoon_base_url);
     })();
+  }, [teamCode]);
+
+  // locale_team option listener
+  useEffect(() => {
+    const unsubscribe = listenToOptionChange('locale_team', async () => {
+      const teamCode = await getOneOption('locale_team');
+      setTeamCode(teamCode);
+    });
+    return unsubscribe;
   }, []);
 
   return team && pontoonBaseUrl ? (

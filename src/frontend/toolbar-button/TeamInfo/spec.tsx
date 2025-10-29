@@ -31,7 +31,7 @@ const openNewPontoonTabSpy = jest
   .spyOn(UtilsApiModule, 'openNewPontoonTab')
   .mockResolvedValue({} as Tabs.Tab);
 
-const team: StorageContent['teamsList'][string] = {
+const team: StorageContent['team'] = {
   code: 'cs',
   name: 'Czech',
   bz_component: 'L10N/CS',
@@ -48,7 +48,7 @@ const team: StorageContent['teamsList'][string] = {
 
 (getPontoonProjectForTheCurrentTab as jest.Mock).mockResolvedValue(undefined);
 (getFromStorage as jest.Mock).mockResolvedValue({
-  teamsList: { cs: team },
+  team,
   latestTeamsActivity: {
     cs: {
       user: 'USER',
@@ -104,7 +104,7 @@ describe('TeamInfo', () => {
 
   it('renders without activity', async () => {
     (getFromStorage as jest.Mock).mockResolvedValue({
-      teamsList: { cs: team },
+      team,
       latestTeamsActivity: {
         cs: {
           user: '',
