@@ -61,7 +61,7 @@ export const pontoonRestClient = {
     }
     return teams;
   },
-  getProjectsInfo: async (): Promise<GetProjectsInfoResponse> => {
+  async getProjectsInfo(): Promise<GetProjectsInfoResponse> {
     const projects: GetProjectsInfoResponse = { projects: [] };
     const baseUrl = await getPontoonBaseUrl();
     let url = `${baseUrl}/api/v2/projects/`;
