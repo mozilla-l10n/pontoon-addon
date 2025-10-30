@@ -204,7 +204,7 @@ async function updateLatestTeamActivity() {
 }
 
 async function updateTeam(): Promise<StorageContent['team']> {
-  const [teamCode] = await Promise.all([getOneOption('locale_team')]);
+  const teamCode = await getOneOption('locale_team');
   const [pontoonData, bugzillaComponentsResponse] = await Promise.all([
     pontoonRestClient.getTeamInfo(teamCode),
     httpClient.fetch(bugzillaTeamComponents()),
