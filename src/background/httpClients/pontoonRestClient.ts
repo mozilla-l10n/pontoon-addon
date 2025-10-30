@@ -43,7 +43,7 @@ export const pontoonRestClient = {
     const team = await response.json();
     return team as GetTeamInfoResponse;
   },
-  getTeamsInfo: async (): Promise<GetTeamsInfoResponse> => {
+  async getTeamsInfo(): Promise<GetTeamsInfoResponse> {
     const teams: GetTeamsInfoResponse = { locales: [] };
     const baseUrl = await getPontoonBaseUrl();
     let url = `${baseUrl}/api/v2/locales/`;
