@@ -19,11 +19,7 @@ interface GetTeamInfoResponse {
   total_strings: number;
 }
 
-export interface GetProjectsInfoResponse {
-  projects: Array<GetProjectInfoResponse>;
-}
-
-interface GetProjectInfoResponse {
+export interface GetProjectInfoResponse {
   slug: string;
   name: string;
 }

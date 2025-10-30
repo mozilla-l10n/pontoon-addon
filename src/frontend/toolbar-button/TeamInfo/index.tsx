@@ -179,7 +179,6 @@ export const TeamInfo: React.FC = () => {
     );
   }, []);
 
-  // Load team data via teamCode change
   useEffect(() => {
     if (!teamCode) return;
 

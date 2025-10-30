@@ -24,12 +24,12 @@ import {
   bugzillaTeamComponents,
 } from './apiEndpoints';
 import { httpClient } from './httpClients/httpClient';
-import type { GetProjectsInfoResponse } from './httpClients/pontoonRestClient';
+import type { GetProjectInfoResponse } from './httpClients/pontoonRestClient';
 import { pontoonRestClient } from './httpClients/pontoonRestClient';
 import { pontoonHttpClient } from './httpClients/pontoonHttpClient';
 import { projectsListData } from './data/projectsListData';
 
-type GetProjectsInfoProject = GetProjectsInfoResponse['projects'][number];
+type GetProjectsInfoProject = GetProjectInfoResponse[][number];
 
 interface UserDataApiResponse {
   notifications: {
