@@ -57,7 +57,8 @@ export const pontoonRestClient = {
       const data: PaginatedResponse<GetTeamInfoResponse> =
         await response.json();
       teams.locales.push(...data.results);
-      url = data.next || '';
+      if (!data.next) break;
+      else url = data.next;
     }
     return teams;
   },
