@@ -32,8 +32,8 @@ interface GetProjectInfoResponse {
   name: string;
 }
 
-async function getPontoonBaseUrl(): Promise<string> {
-  return await getOneOption('pontoon_base_url');
+function getPontoonBaseUrl(): Promise<string> {
+  return getOneOption('pontoon_base_url');
 }
 
 export const pontoonRestClient = {
