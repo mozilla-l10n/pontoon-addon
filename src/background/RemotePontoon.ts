@@ -110,7 +110,7 @@ export async function initOptions() {
     }
   }
 
-  listenToOptionChange('locale_team', async () => await updateTeam());
+  listenToOptionChange('locale_team', updateTeam);
 }
 
 export async function refreshData(context: {
