@@ -199,14 +199,10 @@ export const TeamInfo: React.FC = () => {
     })();
   }, [teamCode]);
 
-  // locale_team option listener
-  useEffect(() => {
-    const unsubscribe = listenToOptionChange('locale_team', async () => {
-      const teamCode = await getOneOption('locale_team');
-      setTeamCode(teamCode);
-    });
-    return unsubscribe;
-  }, []);
+  useEffect(() => listenToOptionChange(
+    'locale_team',
+    () => getOneOption('locale_team').then(setTeamCode)
+  ), []);
 
   return team && pontoonBaseUrl ? (
     <section>
