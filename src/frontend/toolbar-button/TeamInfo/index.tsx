@@ -171,38 +171,35 @@ export const TeamInfo: React.FC = () => {
 
   // Initial load
   useEffect(() => {
-    (async () => {
-      const { locale_team, pontoon_base_url } = await getOptions([
-        'locale_team',
-        'pontoon_base_url',
-      ]);
-      setTeamCode(locale_team);
-      setPontoonBaseUrl(pontoon_base_url);
-    })();
+    getOptions(['locale_team', 'pontoon_base_url']).then(
+      ({ locale_team, pontoon_base_url }) => {
+        setTeamCode(locale_team);
+        setPontoonBaseUrl(pontoon_base_url);
+      },
+    );
   }, []);
 
   // Load team data via teamCode change
   useEffect(() => {
     if (!teamCode) return;
 
-    (async () => {
-      const [projectForCurrentTab, { team, latestTeamsActivity }] =
-        await Promise.all([
-          getPontoonProjectForTheCurrentTab(),
-          getFromStorage(['team', 'latestTeamsActivity']),
-        ]);
+    Promise.all([
+      getPontoonProjectForTheCurrentTab(),
+      getFromStorage(['team', 'latestTeamsActivity']),
+    ]).then(([projectForCurrentTab, { team, latestTeamsActivity }]) => {
       setProjectForCurrentTab(projectForCurrentTab);
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setTeam(team!);
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       setTeamActivity(latestTeamsActivity![teamCode]);
-    })();
+    });
   }, [teamCode]);
 
-  useEffect(() => listenToOptionChange(
-    'locale_team',
-    () => getOneOption('locale_team').then(setTeamCode)
-  ), []);
+  useEffect(
+    () =>
+      listenToOptionChange('locale_team', () =>
+        getOneOption('locale_team').then(setTeamCode),
+      ),
+    [],
+  );
 
   return team && pontoonBaseUrl ? (
     <section>

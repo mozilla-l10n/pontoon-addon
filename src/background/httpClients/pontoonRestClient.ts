@@ -1,9 +1,5 @@
 import { getOneOption } from '@commons/options';
 
-interface GetTeamsInfoResponse {
-  locales: Array<GetTeamInfoResponse>;
-}
-
 interface PaginatedResponse<T> {
   count: number;
   next: string | null;
@@ -40,43 +36,50 @@ export const pontoonRestClient = {
   async getTeamInfo(locale_code: string): Promise<GetTeamInfoResponse> {
     const baseUrl = await getPontoonBaseUrl();
     const response = await fetch(`${baseUrl}/api/v2/locales/${locale_code}`);
+    if (!response.ok) {
+      const errorMessage = `Failed to fetch locale from Pontoon API: ${response.status} ${response.statusText}`;
+      throw new Error(errorMessage);
+    }
     const team = await response.json();
     return team as GetTeamInfoResponse;
   },
-  async getTeamsInfo(): Promise<GetTeamsInfoResponse> {
-    const teams: GetTeamsInfoResponse = { locales: [] };
+  async getTeamsInfo(): Promise<GetTeamInfoResponse[]> {
+    const teams: GetTeamInfoResponse[] = [];
     const baseUrl = await getPontoonBaseUrl();
     let url = `${baseUrl}/api/v2/locales/`;
 
     while (url) {
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error(`${response.status}`);
+        const errorMessage = `Failed to fetch locales from Pontoon API: ${response.status} ${response.statusText}`;
+        throw new Error(errorMessage);
       }
 
       const data: PaginatedResponse<GetTeamInfoResponse> =
         await response.json();
-      teams.locales.push(...data.results);
+      teams.push(...data.results);
       if (!data.next) break;
       else url = data.next;
     }
     return teams;
   },
-  async getProjectsInfo(): Promise<GetProjectsInfoResponse> {
-    const projects: GetProjectsInfoResponse = { projects: [] };
+  async getProjectsInfo(): Promise<GetProjectInfoResponse[]> {
+    const projects: GetProjectInfoResponse[] = [];
     const baseUrl = await getPontoonBaseUrl();
     let url = `${baseUrl}/api/v2/projects/`;
 
     while (url) {
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error(`${response.status}`);
+        const errorMessage = `Failed to fetch projects from Pontoon API: ${response.status} ${response.statusText}`;
+        throw new Error(errorMessage);
       }
 
       const data: PaginatedResponse<GetProjectInfoResponse> =
         await response.json();
-      projects.projects.push(...data.results);
-      url = data.next || '';
+      projects.push(...data.results);
+      if (!data.next) break;
+      else url = data.next;
     }
     return projects;
   },

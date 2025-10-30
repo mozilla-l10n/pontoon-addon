@@ -239,7 +239,7 @@ async function updateTeamsList(): Promise<StorageContent['teamsList']> {
   const bugzillaComponents = (await bugzillaComponentsResponse.json()) as {
     [code: string]: string;
   };
-  const sortedTeams = pontoonData.locales
+  const sortedTeams = pontoonData
     .filter((team) => team.total_strings > 0)
     .sort((team1, team2) => team1.code.localeCompare(team2.code));
   const teamsList: StorageContent['teamsList'] = {};
@@ -271,7 +271,7 @@ async function updateProjectsList(): Promise<StorageContent['projectsList']> {
     GetProjectsInfoProject['slug'],
     GetProjectsInfoProject
   >();
-  for (const project of pontoonData.projects) {
+  for (const project of pontoonData) {
     partialProjectsMap.set(project.slug, project);
   }
   const projects = projectsListData.map((project) => ({
