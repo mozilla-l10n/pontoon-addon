@@ -37,7 +37,7 @@ async function getPontoonBaseUrl(): Promise<string> {
 }
 
 export const pontoonRestClient = {
-  getTeamInfo: async (locale_code: string): Promise<GetTeamInfoResponse> => {
+  async getTeamInfo(locale_code: string): Promise<GetTeamInfoResponse> {
     const baseUrl = await getPontoonBaseUrl();
     const response = await fetch(`${baseUrl}/api/v2/locales/${locale_code}`);
     const team = await response.json();
