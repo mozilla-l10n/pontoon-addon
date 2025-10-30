@@ -38,9 +38,7 @@ export function init() {
   registerClickAction();
 
   addContextMenu();
-  listenToOptionChange('locale_team', async () => {
-    await recreateContextMenu();
-  });
+  listenToOptionChange('locale_team', recreateContextMenu);
 }
 
 async function registerBadgeChanges() {
