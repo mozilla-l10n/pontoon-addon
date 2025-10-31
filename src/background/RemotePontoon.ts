@@ -24,12 +24,10 @@ import {
   bugzillaTeamComponents,
 } from './apiEndpoints';
 import { httpClient } from './httpClients/httpClient';
-import type { GetProjectInfoResponse } from './httpClients/pontoonRestClient';
+import type { ProjectInfo } from './httpClients/pontoonRestClient';
 import { pontoonRestClient } from './httpClients/pontoonRestClient';
 import { pontoonHttpClient } from './httpClients/pontoonHttpClient';
 import { projectsListData } from './data/projectsListData';
-
-type GetProjectsInfoProject = GetProjectInfoResponse[][number];
 
 interface UserDataApiResponse {
   notifications: {
@@ -123,7 +121,6 @@ export async function refreshData(context: {
     updateNotificationsData(),
     updateLatestTeamActivity(),
     updateTeam(),
-    updateTeamsList(),
     updateProjectsList(),
   ]);
 }
@@ -173,13 +170,13 @@ async function updateNotificationsData() {
 }
 
 async function updateLatestTeamActivity() {
-  const reponse = await httpClient.fetch(
+  const response = await httpClient.fetch(
     pontoonTeamsList(
       await getOneOption('pontoon_base_url'),
       AUTOMATION_UTM_SOURCE,
     ),
   );
-  const allTeamsPageContent = await reponse.text();
+  const allTeamsPageContent = await response.text();
   const latestActivityArray = Array.from(
     parseDOM(allTeamsPageContent).querySelectorAll('.team-list tbody tr'),
   ).map((row): StorageContent['latestTeamsActivity'][string] => {
@@ -232,33 +229,16 @@ async function updateTeam(): Promise<StorageContent['team']> {
   return team;
 }
 async function updateTeamsList(): Promise<StorageContent['teamsList']> {
-  const [pontoonData, bugzillaComponentsResponse] = await Promise.all([
-    pontoonRestClient.getTeamsInfo(),
-    httpClient.fetch(bugzillaTeamComponents()),
-  ]);
-  const bugzillaComponents = (await bugzillaComponentsResponse.json()) as {
-    [code: string]: string;
-  };
+  const pontoonData = await pontoonRestClient
+    .getTeamsInfo()
+    .then((data) => data);
   const sortedTeams = pontoonData
     .filter((team) => team.total_strings > 0)
     .sort((team1, team2) => team1.code.localeCompare(team2.code));
   const teamsList: StorageContent['teamsList'] = {};
 
   for (const team of sortedTeams) {
-    teamsList[team.code] = {
-      code: team.code,
-      name: team.name,
-      strings: {
-        approvedStrings: team.approved_strings,
-        pretranslatedStrings: team.pretranslated_strings,
-        stringsWithWarnings: team.strings_with_warnings,
-        stringsWithErrors: team.strings_with_errors,
-        missingStrings: team.missing_strings,
-        unreviewedStrings: team.unreviewed_strings,
-        totalStrings: team.total_strings,
-      },
-      bz_component: bugzillaComponents[team.code],
-    };
+    teamsList[team.code] = team.name;
   }
   await saveToStorage({ teamsList });
 
@@ -267,10 +247,7 @@ async function updateTeamsList(): Promise<StorageContent['teamsList']> {
 
 async function updateProjectsList(): Promise<StorageContent['projectsList']> {
   const pontoonData = await pontoonRestClient.getProjectsInfo();
-  const partialProjectsMap = new Map<
-    GetProjectsInfoProject['slug'],
-    GetProjectsInfoProject
-  >();
+  const partialProjectsMap = new Map<ProjectInfo['slug'], ProjectInfo>();
   for (const project of pontoonData) {
     partialProjectsMap.set(project.slug, project);
   }

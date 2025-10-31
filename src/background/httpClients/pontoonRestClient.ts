@@ -19,10 +19,12 @@ interface GetTeamInfoResponse {
   total_strings: number;
 }
 
-export interface GetProjectInfoResponse {
+export interface ProjectInfo {
   slug: string;
   name: string;
 }
+
+type GetProjectInfoResponse = ProjectInfo;
 
 function getPontoonBaseUrl(): Promise<string> {
   return getOneOption('pontoon_base_url');

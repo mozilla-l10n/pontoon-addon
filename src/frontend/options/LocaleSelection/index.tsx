@@ -48,9 +48,9 @@ export const LocaleSelection: React.FC = () => {
       >
         {localeTeam &&
           teamsList &&
-          Object.entries(teamsList).map(([locale, teamData]) => (
+          Object.entries(teamsList).map(([locale, teamName]) => (
             <option key={locale} value={locale}>
-              {`${teamData.name} (${locale})`}
+              {`${teamName} (${locale})`}
             </option>
           ))}
       </SelectInput>{' '}

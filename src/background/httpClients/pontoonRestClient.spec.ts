@@ -1,6 +1,6 @@
 import { getOneOption } from '@commons/options';
 
-import type { GetProjectInfoResponse } from './pontoonRestClient';
+import type { ProjectInfo } from './pontoonRestClient';
 import { pontoonRestClient } from './pontoonRestClient';
 
 jest.mock('@commons/options');
@@ -163,12 +163,12 @@ describe('pontoonRestClient', () => {
   });
 
   describe('getProjectsInfo', () => {
-    const mockProject1: GetProjectInfoResponse = {
+    const mockProject1: ProjectInfo = {
       slug: 'firefox',
       name: 'Firefox',
     };
 
-    const mockProject2: GetProjectInfoResponse = {
+    const mockProject2: ProjectInfo = {
       slug: 'thunderbird',
       name: 'Thunderbird',
     };
