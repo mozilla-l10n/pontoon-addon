@@ -112,16 +112,17 @@ export async function initOptions() {
 }
 
 export async function refreshData(context: {
-  event: 'user interaction' | 'automation';
+  event: 'user interaction' | 'automation' | 'project list';
 }) {
   if (context.event === 'user interaction') {
     await saveToStorage({ notificationsDataLoadingState: 'loading' });
+  } else if (context.event === 'project list') {
+    await updateProjectsList();
   }
   await Promise.all([
     updateNotificationsData(),
     updateLatestTeamActivity(),
     updateTeam(),
-    updateProjectsList(),
   ]);
 }
 
