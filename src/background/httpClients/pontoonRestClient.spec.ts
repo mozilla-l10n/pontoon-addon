@@ -127,7 +127,7 @@ describe('pontoonRestClient', () => {
 
       expect(mockGetOneOption).toHaveBeenCalledWith('pontoon_base_url');
       expect(mockFetch).toHaveBeenCalledWith(
-        'https://pontoon.example.com/api/v2/locales/',
+        'https://pontoon.example.com/api/v2/locales/?fields=code,name,total_strings&page_size=1000',
       );
       expect(result).toEqual([mockTeam1, mockTeam2]);
     });
@@ -189,7 +189,7 @@ describe('pontoonRestClient', () => {
 
       expect(mockGetOneOption).toHaveBeenCalledWith('pontoon_base_url');
       expect(mockFetch).toHaveBeenCalledWith(
-        'https://pontoon.example.com/api/v2/projects/',
+        'https://pontoon.example.com/api/v2/projects/?fields=slug,name&page_size=1000',
       );
       expect(result).toEqual([mockProject1, mockProject2]);
     });

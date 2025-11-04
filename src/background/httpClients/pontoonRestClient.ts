@@ -44,7 +44,7 @@ export const pontoonRestClient = {
   async getTeamsInfo(): Promise<GetTeamInfoResponse[]> {
     const teams: GetTeamInfoResponse[] = [];
     const baseUrl = await getPontoonBaseUrl();
-    let url = `${baseUrl}/api/v2/locales/?fields=code,name&page_size=1000`;
+    let url = `${baseUrl}/api/v2/locales/?fields=code,name,total_strings&page_size=1000`;
 
     while (url) {
       const response = await fetch(url);
