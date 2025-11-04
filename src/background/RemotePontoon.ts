@@ -123,6 +123,7 @@ export async function refreshData(context: {
     updateNotificationsData(),
     updateLatestTeamActivity(),
     updateTeam(),
+    updateTeamsList(),
   ]);
 }
 
