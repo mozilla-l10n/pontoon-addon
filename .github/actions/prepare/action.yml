@@ -11,7 +11,7 @@ runs:
   steps:
     - name: Restore cache
       id: restore-cache
-      uses: actions/cache/restore@v3
+      uses: actions/cache/restore@v4
       with:
         path: |
           node_modules
@@ -25,7 +25,7 @@ runs:
       run: make prepare_in_container
       shell: bash
     - name: Save cache
-      uses: actions/cache/save@v3
+      uses: actions/cache/save@v4
       if: inputs.save-cache == 'true' && steps.prepare.outcome == 'success'
       with:
         path: |
