@@ -86,6 +86,9 @@ export function getManifestFor(
               strict_min_version: getMinBrowserVersionFromPackageJson(
                 BrowserFamily.MOZILLA,
               ),
+              data_collection_permissions: {
+                required: ['none'],
+              },
             },
           },
         }
