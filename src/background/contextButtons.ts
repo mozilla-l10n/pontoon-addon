@@ -7,7 +7,7 @@ import {
   openNewTab,
   getOneFromStorage,
 } from '@commons/webExtensionsApi';
-import { getOneOption, getOptions } from '@commons/options';
+import { getOptions } from '@commons/options';
 import { openNewPontoonTab } from '@commons/utils';
 
 export function init() {
@@ -33,13 +33,10 @@ function listenToMessagesFromContentScript() {
   listenToMessages<'REPORT_TRANSLATED_TEXT_TO_BUGZILLA'>(
     'report-translated-text-to-bugzilla',
     async ({ text: selectedText }, { url }) => {
-      const [teamCode, teamsList] = await Promise.all([
-        getOneOption('locale_team'),
-        getOneFromStorage('teamsList'),
-      ]);
+      const team = await getOneFromStorage('team');
       openNewTab(
         newLocalizationBug({
-          team: teamsList![teamCode], // eslint-disable-line @typescript-eslint/no-non-null-assertion
+          team: team!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
           selectedText,
           url,
         }),

@@ -10,7 +10,12 @@ import {
   saveToStorage,
 } from '@commons/webExtensionsApi';
 import { pontoonSettings, pontoonTeamsList } from '@commons/webLinks';
-import { getOneOption, resetDefaultOptions, setOption } from '@commons/options';
+import {
+  getOneOption,
+  listenToOptionChange,
+  resetDefaultOptions,
+  setOption,
+} from '@commons/options';
 
 import {
   AUTOMATION_UTM_SOURCE,
@@ -19,12 +24,10 @@ import {
   bugzillaTeamComponents,
 } from './apiEndpoints';
 import { httpClient } from './httpClients/httpClient';
-import type { GetProjectsInfoResponse } from './httpClients/pontoonGraphqlClient';
-import { pontoonGraphqlClient } from './httpClients/pontoonGraphqlClient';
+import type { ProjectInfo } from './httpClients/pontoonRestClient';
+import { pontoonRestClient } from './httpClients/pontoonRestClient';
 import { pontoonHttpClient } from './httpClients/pontoonHttpClient';
 import { projectsListData } from './data/projectsListData';
-
-type GetProjectsInfoProject = GetProjectsInfoResponse['projects'][number];
 
 interface UserDataApiResponse {
   notifications: {
@@ -104,19 +107,23 @@ export async function initOptions() {
       await setOption('locale_team', teamFromPontoon);
     }
   }
+
+  listenToOptionChange('locale_team', updateTeam);
 }
 
 export async function refreshData(context: {
-  event: 'user interaction' | 'automation';
+  event: 'user interaction' | 'automation' | 'project list';
 }) {
   if (context.event === 'user interaction') {
     await saveToStorage({ notificationsDataLoadingState: 'loading' });
+  } else if (context.event === 'project list') {
+    await updateProjectsList();
   }
   await Promise.all([
     updateNotificationsData(),
     updateLatestTeamActivity(),
+    updateTeam(),
     updateTeamsList(),
-    updateProjectsList(),
   ]);
 }
 
@@ -142,10 +149,10 @@ async function updateNotificationsIfThereAreNew(pageContent: string) {
 
 async function updateNotificationsData() {
   try {
-    const reponse = await pontoonHttpClient.fetchFromPontoonSession(
+    const response = await pontoonHttpClient.fetchFromPontoonSession(
       pontoonUserData(await getOneOption('pontoon_base_url')),
     );
-    const userData = (await reponse.json()) as UserDataApiResponse;
+    const userData = (await response.json()) as UserDataApiResponse;
     const notificationsData: StorageContent['notificationsData'] = {};
     for (const notification of userData.notifications.notifications) {
       notificationsData[notification.id] = {
@@ -165,13 +172,13 @@ async function updateNotificationsData() {
 }
 
 async function updateLatestTeamActivity() {
-  const reponse = await httpClient.fetch(
+  const response = await httpClient.fetch(
     pontoonTeamsList(
       await getOneOption('pontoon_base_url'),
       AUTOMATION_UTM_SOURCE,
     ),
   );
-  const allTeamsPageContent = await reponse.text();
+  const allTeamsPageContent = await response.text();
   const latestActivityArray = Array.from(
     parseDOM(allTeamsPageContent).querySelectorAll('.team-list tbody tr'),
   ).map((row): StorageContent['latestTeamsActivity'][string] => {
@@ -195,45 +202,55 @@ async function updateLatestTeamActivity() {
   }
 }
 
-async function updateTeamsList(): Promise<StorageContent['teamsList']> {
+async function updateTeam(): Promise<StorageContent['team']> {
+  const teamCode = await getOneOption('locale_team');
   const [pontoonData, bugzillaComponentsResponse] = await Promise.all([
-    pontoonGraphqlClient.getTeamsInfo(),
+    pontoonRestClient.getTeamInfo(teamCode),
     httpClient.fetch(bugzillaTeamComponents()),
   ]);
   const bugzillaComponents = (await bugzillaComponentsResponse.json()) as {
     [code: string]: string;
   };
-  const sortedTeams = pontoonData.locales
-    .filter((team) => team.totalStrings > 0)
+
+  const team: StorageContent['team'] = {
+    code: pontoonData.code,
+    name: pontoonData.name,
+    strings: {
+      approvedStrings: pontoonData.approved_strings,
+      pretranslatedStrings: pontoonData.pretranslated_strings,
+      stringsWithWarnings: pontoonData.strings_with_warnings,
+      stringsWithErrors: pontoonData.strings_with_errors,
+      missingStrings: pontoonData.missing_strings,
+      unreviewedStrings: pontoonData.unreviewed_strings,
+      totalStrings: pontoonData.total_strings,
+    },
+    bz_component: bugzillaComponents[pontoonData.code],
+  };
+
+  await saveToStorage({ team });
+  return team;
+}
+async function updateTeamsList(): Promise<StorageContent['teamsList']> {
+  const pontoonData = await pontoonRestClient
+    .getTeamsInfo()
+    .then((data) => data);
+  const sortedTeams = pontoonData
+    .filter((team) => team.total_strings > 0)
     .sort((team1, team2) => team1.code.localeCompare(team2.code));
   const teamsList: StorageContent['teamsList'] = {};
+
   for (const team of sortedTeams) {
-    teamsList[team.code] = {
-      code: team.code,
-      name: team.name,
-      strings: {
-        approvedStrings: team.approvedStrings,
-        pretranslatedStrings: team.pretranslatedStrings,
-        stringsWithWarnings: team.stringsWithWarnings,
-        stringsWithErrors: team.stringsWithErrors,
-        missingStrings: team.missingStrings,
-        unreviewedStrings: team.unreviewedStrings,
-        totalStrings: team.totalStrings,
-      },
-      bz_component: bugzillaComponents[team.code],
-    };
+    teamsList[team.code] = team.name;
   }
   await saveToStorage({ teamsList });
+
   return teamsList;
 }
 
 async function updateProjectsList(): Promise<StorageContent['projectsList']> {
-  const pontoonData = await pontoonGraphqlClient.getProjectsInfo();
-  const partialProjectsMap = new Map<
-    GetProjectsInfoProject['slug'],
-    GetProjectsInfoProject
-  >();
-  for (const project of pontoonData.projects) {
+  const pontoonData = await pontoonRestClient.getProjectsInfo();
+  const partialProjectsMap = new Map<ProjectInfo['slug'], ProjectInfo>();
+  for (const project of pontoonData) {
     partialProjectsMap.set(project.slug, project);
   }
   const projects = projectsListData.map((project) => ({

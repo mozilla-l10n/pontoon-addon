@@ -118,8 +118,6 @@ jobs:
           ref: ${{ inputs.checkout_ref }}
       - name: Prepare the project
         uses: ./.github/actions/prepare
-      - name: Generate GraphQL code
-        run: make graphql_generate
       - name: Check changes in generated code
         run: |
           git status

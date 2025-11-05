@@ -2,15 +2,6 @@ import { default as URITemplate } from 'urijs/src/URITemplate';
 
 export const AUTOMATION_UTM_SOURCE = 'pontoon-addon-automation';
 
-export function pontoonGraphQL(baseUrl: string): string {
-  return URITemplate('{+baseUrl}{/path*}')
-    .expand({
-      baseUrl,
-      path: ['graphql'],
-    })
-    .toString();
-}
-
 export function pontoonUserData(baseUrl: string): string {
   // without the trailing slash Pontoon returns 301
   return URITemplate('{+baseUrl}{/path*}/{?q*}')

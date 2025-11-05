@@ -9,7 +9,11 @@ import {
   getFromStorage,
   openNewTab,
 } from '@commons/webExtensionsApi';
-import { getOptions } from '@commons/options';
+import {
+  getOneOption,
+  getOptions,
+  listenToOptionChange,
+} from '@commons/options';
 import type { OptionsContent } from '@commons/data/defaultOptions';
 import {
   newLocalizationBug,
@@ -98,7 +102,7 @@ const Code: React.FC<React.ComponentProps<'span'>> = (props) => (
 const STRING_CATEGORIES: Array<{
   status: string;
   label: React.ComponentProps<typeof TeamInfoListItem>['label'];
-  dataProperty: keyof StorageContent['teamsList'][string]['strings'];
+  dataProperty: keyof StorageContent['team']['strings'];
   labelBeforeStyle?: React.ComponentProps<
     typeof TeamInfoListItem
   >['squareStyle'];
@@ -158,31 +162,43 @@ async function openNewPontoonTabAndClosePopup(url: string): Promise<void> {
 export const TeamInfo: React.FC = () => {
   const [projectForCurrentTab, setProjectForCurrentTab] =
     useState<StorageContent['projectsList'][string]>();
-  const [team, setTeam] = useState<StorageContent['teamsList'][string]>();
+  const [team, setTeam] = useState<StorageContent['team']>();
   const [teamActivity, setTeamActivity] =
     useState<StorageContent['latestTeamsActivity'][string]>();
   const [pontoonBaseUrl, setPontoonBaseUrl] =
     useState<OptionsContent['pontoon_base_url']>();
+  const [teamCode, setTeamCode] = useState<OptionsContent['locale_team']>();
+
+  // Initial load
+  useEffect(() => {
+    getOptions(['locale_team', 'pontoon_base_url']).then(
+      ({ locale_team, pontoon_base_url }) => {
+        setTeamCode(locale_team);
+        setPontoonBaseUrl(pontoon_base_url);
+      },
+    );
+  }, []);
 
   useEffect(() => {
-    (async () => {
-      const [
-        projectForCurrentTab,
-        { teamsList, latestTeamsActivity },
-        { locale_team: teamCode, pontoon_base_url },
-      ] = await Promise.all([
-        getPontoonProjectForTheCurrentTab(),
-        getFromStorage(['teamsList', 'latestTeamsActivity']),
-        getOptions(['locale_team', 'pontoon_base_url']),
-      ]);
+    if (!teamCode) return;
+
+    Promise.all([
+      getPontoonProjectForTheCurrentTab(),
+      getFromStorage(['team', 'latestTeamsActivity']),
+    ]).then(([projectForCurrentTab, { team, latestTeamsActivity }]) => {
       setProjectForCurrentTab(projectForCurrentTab);
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      setTeam(teamsList![teamCode]);
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      setTeam(team!);
       setTeamActivity(latestTeamsActivity![teamCode]);
-      setPontoonBaseUrl(pontoon_base_url);
-    })();
-  }, []);
+    });
+  }, [teamCode]);
+
+  useEffect(
+    () =>
+      listenToOptionChange('locale_team', () =>
+        getOneOption('locale_team').then(setTeamCode),
+      ),
+    [],
+  );
 
   return team && pontoonBaseUrl ? (
     <section>

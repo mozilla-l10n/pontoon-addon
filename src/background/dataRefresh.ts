@@ -40,6 +40,7 @@ export function init() {
   );
 
   registerLiveDataProvider();
+  refreshData({ event: 'project list' });
 }
 
 function refreshDataWithInterval(periodInMinutes: number) {

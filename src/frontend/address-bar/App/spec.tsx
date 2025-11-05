@@ -9,7 +9,7 @@ import {
   getOneFromStorage,
   openNewTab,
 } from '@commons/webExtensionsApi';
-import { getOptions } from '@commons/options';
+import { getOneOption } from '@commons/options';
 import {
   newLocalizationBug,
   pontoonProjectTranslationView,
@@ -35,15 +35,21 @@ const project = {
 const team = {
   code: 'cs',
   name: 'Czech',
+  strings: {
+    approvedStrings: 0,
+    pretranslatedStrings: 0,
+    stringsWithWarnings: 0,
+    stringsWithErrors: 0,
+    missingStrings: 0,
+    unreviewedStrings: 3,
+    totalStrings: 72285,
+  },
   bz_component: 'L10N/CS',
 };
 
 (getPontoonProjectForTheCurrentTab as jest.Mock).mockResolvedValue(project);
-(getOneFromStorage as jest.Mock).mockResolvedValue({ [team.code]: team });
-(getOptions as jest.Mock).mockResolvedValue({
-  locale_team: team.code,
-  pontoon_base_url: 'https://localhost',
-});
+(getOneFromStorage as jest.Mock).mockResolvedValue(team);
+(getOneOption as jest.Mock).mockResolvedValue('https://localhost');
 (getActiveTab as jest.Mock).mockResolvedValue({
   url: 'https://localhost/firefox',
 });

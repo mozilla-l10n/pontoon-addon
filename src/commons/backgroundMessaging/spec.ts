@@ -75,20 +75,7 @@ describe('messagingClient', () => {
 
   it('updateTeamsList', async () => {
     const mockTeamsList: BackgroundMessage['UPDATE_TEAMS_LIST']['response'] = {
-      cs: {
-        code: 'cs',
-        name: 'Czech',
-        bz_component: 'BZ / Czech',
-        strings: {
-          approvedStrings: 0,
-          pretranslatedStrings: 0,
-          stringsWithWarnings: 0,
-          stringsWithErrors: 0,
-          missingStrings: 0,
-          unreviewedStrings: 0,
-          totalStrings: 0,
-        },
-      },
+      cs: 'Czech',
     };
     mockBrowserSendMessage<'UPDATE_TEAMS_LIST'>()
       .expect({ type: 'update-teams-list' })

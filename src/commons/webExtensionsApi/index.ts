@@ -30,21 +30,22 @@ export interface StorageContent {
       domains: string[];
     };
   };
-  teamsList: {
-    [code: string]: {
-      code: string;
-      name: string;
-      strings: {
-        approvedStrings: number;
-        pretranslatedStrings: number;
-        stringsWithWarnings: number;
-        stringsWithErrors: number;
-        missingStrings: number;
-        unreviewedStrings: number;
-        totalStrings: number;
-      };
-      bz_component: string;
+  team: {
+    code: string;
+    name: string;
+    strings: {
+      approvedStrings: number;
+      pretranslatedStrings: number;
+      stringsWithWarnings: number;
+      stringsWithErrors: number;
+      missingStrings: number;
+      unreviewedStrings: number;
+      totalStrings: number;
     };
+    bz_component: string;
+  };
+  teamsList: {
+    [code: string]: string;
   };
   notificationsDataLoadingState: 'loading' | 'loaded' | 'error' | undefined;
   notificationsData: {
