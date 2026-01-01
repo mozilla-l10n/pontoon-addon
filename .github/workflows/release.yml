@@ -73,7 +73,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Download built add-on for release
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.build.outputs.production_artifact_name }}
           path: dist
@@ -104,7 +104,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Download built add-on to publish
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.build.outputs.production_artifact_name }}
           path: dist
@@ -131,7 +131,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Download built add-on to publish
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: ${{ needs.build.outputs.production_artifact_name }}
           path: dist
