@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
-    "dompurify": "^3.3.0",
+    "dompurify": "^3.3.1",
     "html-react-parser": "^5.2.11",
     "javascript-time-ago": "^2.5.12",
     "marked": "^15.0.11",
