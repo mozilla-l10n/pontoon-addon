@@ -2,6 +2,7 @@ import URI from 'urijs';
 
 import type { StorageContent } from '@commons/webExtensionsApi';
 import {
+  browser,
   deleteFromStorage,
   getActiveTab,
   getOneFromStorage,
@@ -101,10 +102,12 @@ export function initMessageListeners() {
 
 export async function initOptions() {
   const localeTeamOption = await getOneOption('locale_team');
-  if (typeof localeTeamOption !== 'string') {
+  if (localeTeamOption === '') {
     const teamFromPontoon = await getUsersTeamFromPontoon();
     if (typeof teamFromPontoon === 'string') {
       await setOption('locale_team', teamFromPontoon);
+    } else {
+      await setOption('locale_team', browser.i18n.getUILanguage());
     }
   }
 
