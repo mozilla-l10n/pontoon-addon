@@ -1,5 +1,5 @@
 import { DEFAULT_PONTOON_BASE_URL } from '../../const';
-import { browser, BrowserFamily } from '../webExtensionsApi';
+import { BrowserFamily } from '../webExtensionsApi';
 
 export interface OptionsContent {
   locale_team: string;
@@ -12,7 +12,7 @@ export interface OptionsContent {
 }
 
 const generalDefaultOptions: OptionsContent = {
-  locale_team: browser?.i18n?.getUILanguage() ?? undefined, // no fallback e.g. for content scripts
+  locale_team: '',
   data_update_interval: 15,
   toolbar_button_action: 'popup',
   toolbar_button_popup_always_hide_read_notifications: false,
@@ -26,7 +26,7 @@ export function coalesceLegacyValues<K extends keyof OptionsContent>(
   value: OptionsContent[K],
 ): OptionsContent[K] {
   if (id === 'locale_team' && typeof value === 'undefined') {
-    return browser.i18n.getUILanguage() as OptionsContent[K];
+    return '' as OptionsContent[K];
   } else if (id === 'toolbar_button_action' && value === 'home-page') {
     return 'team-page' as OptionsContent[K];
   } else {
