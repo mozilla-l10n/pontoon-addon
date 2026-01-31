@@ -17,6 +17,10 @@ import { default as browserObj } from './browser';
 
 export const browser = browserObj;
 
+// Keep track of created context menu IDs so callers can safely remove
+// an item only if the add-on previously created it.
+const createdContextMenuIds = new Set<number | string>();
+
 export enum BrowserFamily {
   MOZILLA = 'mozilla',
   CHROMIUM = 'chromium',
@@ -145,11 +149,39 @@ export async function closeNotification(notificationId: string) {
 export function createContextMenu(
   createProperties: Menus.CreateCreatePropertiesType,
 ) {
-  return browser.contextMenus.create(createProperties);
+  const created = browser.contextMenus.create(createProperties);
+  // Track created menu IDs when caller provides an `id`.
+  if (typeof createProperties.id !== 'undefined') {
+    createdContextMenuIds.add(createProperties.id as number | string);
+  }
+  return created;
 }
 
 export async function removeContextMenu(menuItemId: number | string) {
-  return await browser.contextMenus.remove(menuItemId);
+  if (!createdContextMenuIds.has(menuItemId)) {
+    // The add-on didn't create this ID, don't try to remove it.
+    return;
+  }
+
+  try {
+    const res = await browser.contextMenus.remove(menuItemId);
+    createdContextMenuIds.delete(menuItemId);
+    return res;
+  } catch {
+    console.log(
+      '[pontoon-addon] Tried to remove non-existent context menu id:',
+      menuItemId,
+    );
+    createdContextMenuIds.delete(menuItemId);
+    return;
+  }
+}
+
+export async function removeAllContextMenus() {
+  createdContextMenuIds.clear();
+  if (typeof browser.contextMenus.removeAll === 'function') {
+    return await browser.contextMenus.removeAll();
+  }
 }
 
 export function browserFamily(): BrowserFamily {

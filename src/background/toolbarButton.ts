@@ -15,6 +15,7 @@ import {
   getOneFromStorage,
   openIntro,
   createContextMenu,
+  removeAllContextMenus,
 } from '@commons/webExtensionsApi';
 import {
   pontoonTeam,
@@ -306,6 +307,6 @@ async function addContextMenu() {
 }
 
 async function recreateContextMenu() {
-  await browser.contextMenus.removeAll();
+  await removeAllContextMenus();
   await addContextMenu();
 }
