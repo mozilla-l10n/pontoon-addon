@@ -47,7 +47,7 @@ const config: Config.InitialOptions = {
     ...staticFilesTransform,
   },
   transformIgnorePatterns: [
-    'node_modules/(?!react-game-snake)',
+    'node_modules/(?!react-game-snake|marked)',
   ],
   moduleNameMapper: {
     ...defaults.moduleNameMapper,
