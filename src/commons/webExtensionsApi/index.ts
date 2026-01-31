@@ -327,16 +327,18 @@ export function listenToMessages<
     sender: Pick<Runtime.MessageSender, 'tab' | 'url'>,
   ) => void | Promise<void>,
 ) {
-  browser.runtime.onMessage.addListener((message, sender) => {
-    const typedMessade =
-      message as BackgroundMessagesWithoutResponse[T]['message'];
-    if (typedMessade.type === type) {
-      // no return to allow all listeners to react on the message
-      action(typedMessade, sender);
-    }
-    // always check check other actions if they are subscribed for this message
-    return undefined;
-  });
+  browser.runtime.onMessage.addListener(
+    (message: unknown, sender: Runtime.MessageSender) => {
+      const typedMessage =
+        message as BackgroundMessagesWithoutResponse[T]['message'];
+      if (typedMessage.type === type) {
+        // no return to allow all listeners to react on the message
+        action(typedMessage, sender);
+      }
+      // always check check other actions if they are subscribed for this message
+      return undefined;
+    },
+  );
 }
 
 export function listenToMessagesAndRespond<
@@ -348,15 +350,17 @@ export function listenToMessagesAndRespond<
     sender: Pick<Runtime.MessageSender, 'tab' | 'url'>,
   ) => Promise<BackgroundMessagesWithResponse[T]['response']>,
 ) {
-  browser.runtime.onMessage.addListener((message, sender) => {
-    const typedMessade =
-      message as BackgroundMessagesWithResponse[T]['message'];
-    if (typedMessade.type === type) {
-      // only one listener can send a response
-      return action(typedMessade, sender);
-    } else {
-      // let other actions check if they are subscribed for this message
-      return undefined;
-    }
-  });
+  browser.runtime.onMessage.addListener(
+    (message: unknown, sender: Runtime.MessageSender) => {
+      const typedMessage =
+        message as BackgroundMessagesWithResponse[T]['message'];
+      if (typedMessage.type === type) {
+        // only one listener can send a response
+        return action(typedMessage, sender);
+      } else {
+        // let other actions check if they are subscribed for this message
+        return undefined;
+      }
+    },
+  );
 }
