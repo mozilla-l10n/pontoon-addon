@@ -5,9 +5,15 @@ import 'jest-webextension-mock';
   by `jest-webextension-mock`. This avoids duplicating mock factories
   and keeps a single source of truth for the mock shape.
 */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { Browser } from 'webextension-polyfill';
 
-const mock =
-  (globalThis as any).mockBrowser || (globalThis as any).browser || {};
+const _global = globalThis as unknown as {
+  mockBrowser?: Browser;
+  browser?: Browser;
+};
+
+const mock = (_global.mockBrowser ||
+  _global.browser ||
+  ({} as Browser)) as jest.Mocked<Browser>;
 
 export default mock;

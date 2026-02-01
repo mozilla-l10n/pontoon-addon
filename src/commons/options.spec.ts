@@ -1,5 +1,6 @@
 /* eslint-disable jest/expect-expect */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { Browser } from 'webextension-polyfill';
+
 import 'jest-webextension-mock';
 import { browser } from './webExtensionsApi';
 import {
@@ -10,11 +11,17 @@ import {
 } from './options';
 import { defaultOptionsFor } from './data/defaultOptions';
 
+const _global = globalThis as unknown as {
+  mockBrowser?: Browser;
+  browser?: Browser;
+  jest?: unknown;
+};
+
 const mockBrowser =
-  (browser as any) ||
-  (globalThis as any).mockBrowser ||
-  (globalThis as any).browser ||
-  {};
+  (browser as unknown as jest.Mocked<Browser>) ||
+  (_global.mockBrowser as jest.Mocked<Browser>) ||
+  (_global.browser as jest.Mocked<Browser>) ||
+  ({} as jest.Mocked<Browser>);
 
 jest.mock('@commons/webExtensionsApi/browser');
 jest.mock('@commons/data/defaultOptions');
@@ -25,14 +32,9 @@ jest.mock('@commons/data/defaultOptions');
 
 beforeEach(() => {
   mockBrowser.runtime = mockBrowser.runtime || {};
-  mockBrowser.runtime.getURL =
-    mockBrowser.runtime.getURL && (mockBrowser.runtime.getURL as any).mock
-      ? (mockBrowser.runtime.getURL as jest.Mock).mockReturnValue(
-          'moz-extension://',
-        ) && (mockBrowser.runtime.getURL as jest.Mock)
-      : (globalThis as any).jest
-        ? (globalThis as any).jest.fn().mockReturnValue('moz-extension://')
-        : () => 'moz-extension://';
+  (mockBrowser.runtime.getURL as jest.Mock) = jest
+    .fn()
+    .mockReturnValue('moz-extension://');
 });
 
 describe('options', () => {

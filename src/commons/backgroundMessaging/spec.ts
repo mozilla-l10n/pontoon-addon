@@ -1,9 +1,15 @@
 /* eslint-disable jest/expect-expect */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { Browser } from 'webextension-polyfill';
 import 'jest-webextension-mock';
 
-const mockBrowser =
-  (globalThis as any).mockBrowser || (globalThis as any).browser || {};
+const _global = globalThis as unknown as {
+  mockBrowser?: Browser;
+  browser?: Browser;
+};
+
+const mockBrowser = (_global.mockBrowser ||
+  _global.browser ||
+  ({} as Browser)) as jest.Mocked<Browser>;
 
 import { getOneOption } from '../options';
 

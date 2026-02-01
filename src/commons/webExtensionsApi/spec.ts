@@ -1,10 +1,15 @@
 /* eslint-disable jest/expect-expect */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type { Tabs } from 'webextension-polyfill';
+import type { Tabs, Browser } from 'webextension-polyfill';
 import 'jest-webextension-mock';
 
-const mockBrowser =
-  (globalThis as any).mockBrowser || (globalThis as any).browser || {};
+const _global = globalThis as unknown as {
+  mockBrowser?: Browser;
+  browser?: Browser;
+};
+
+const mockBrowser = (_global.mockBrowser ||
+  _global.browser ||
+  ({} as Browser)) as jest.Mocked<Browser>;
 
 import { defaultOptionsFor } from '../data/defaultOptions';
 
@@ -96,7 +101,11 @@ describe('webExtensionsApi', () => {
 
   it('createNotification', async () => {
     (mockBrowser.notifications.create as jest.Mock).mockResolvedValue('id');
-    mockBrowser.notifications.onClicked = { addListener: jest.fn() };
+    mockBrowser.notifications.onClicked = {
+      addListener: jest.fn(),
+      removeListener: jest.fn(),
+      hasListener: jest.fn(),
+    } as unknown as typeof mockBrowser.notifications.onClicked;
 
     await createNotification({ type: 'basic', title: 'foo', message: 'bar' });
 
@@ -362,7 +371,11 @@ describe('webExtensionsApi', () => {
 
   it('callWithInterval', () => {
     (mockBrowser.alarms.create as jest.Mock) = jest.fn();
-    mockBrowser.alarms.onAlarm = { addListener: jest.fn() };
+    mockBrowser.alarms.onAlarm = {
+      addListener: jest.fn(),
+      removeListener: jest.fn(),
+      hasListener: jest.fn(),
+    } as unknown as typeof mockBrowser.alarms.onAlarm;
 
     callWithInterval('name', { periodInMinutes: 42 }, jest.fn());
 
@@ -376,7 +389,11 @@ describe('webExtensionsApi', () => {
 
   it('callDelayed', () => {
     (mockBrowser.alarms.create as jest.Mock) = jest.fn();
-    mockBrowser.alarms.onAlarm = { addListener: jest.fn() };
+    mockBrowser.alarms.onAlarm = {
+      addListener: jest.fn(),
+      removeListener: jest.fn(),
+      hasListener: jest.fn(),
+    } as unknown as typeof mockBrowser.alarms.onAlarm;
 
     callDelayed({ delayInSeconds: 30 }, jest.fn());
 
@@ -387,7 +404,11 @@ describe('webExtensionsApi', () => {
   });
 
   it('listenToMessages', () => {
-    mockBrowser.runtime.onMessage = { addListener: jest.fn() };
+    mockBrowser.runtime.onMessage = {
+      addListener: jest.fn(),
+      removeListener: jest.fn(),
+      hasListener: jest.fn(),
+    } as unknown as typeof mockBrowser.runtime.onMessage;
 
     listenToMessages<'SEARCH_TEXT_IN_PONTOON'>(
       'search-text-in-pontoon',
@@ -400,7 +421,11 @@ describe('webExtensionsApi', () => {
   });
 
   it('listenToMessagesAndRespond', () => {
-    mockBrowser.runtime.onMessage = { addListener: jest.fn() };
+    mockBrowser.runtime.onMessage = {
+      addListener: jest.fn(),
+      removeListener: jest.fn(),
+      hasListener: jest.fn(),
+    } as unknown as typeof mockBrowser.runtime.onMessage;
 
     listenToMessagesAndRespond<'UPDATE_TEAMS_LIST'>(
       'update-teams-list',
