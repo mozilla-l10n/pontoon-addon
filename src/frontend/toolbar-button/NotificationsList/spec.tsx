@@ -1,6 +1,6 @@
 import type { Tabs } from 'webextension-polyfill';
 import React from 'react';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import flushPromises from 'flush-promises';
 
 import * as UtilsApiModule from '@commons/utils';
@@ -100,7 +100,7 @@ describe('NotificationsList', () => {
     expect(screen.getByTestId('notifications-list-error')).toBeInTheDocument();
   });
 
-  it('bottom link marks all as read when unread notifications are present', () => {
+  it('bottom link marks all as read when unread notifications are present', async () => {
     render(
       <NotificationsList
         notificationsData={{
@@ -112,9 +112,7 @@ describe('NotificationsList', () => {
       />,
     );
 
-    act(() => {
-      screen.getByText('Mark all Notifications as read').click();
-    });
+    (await screen.findByText('Mark all Notifications as read')).click();
 
     expect(markAllNotificationsAsRead).toHaveBeenCalled();
   });
@@ -131,10 +129,8 @@ describe('NotificationsList', () => {
       />,
     );
 
-    await act(async () => {
-      screen.getByText('See all Notifications').click();
-      await flushPromises();
-    });
+    (await screen.findByText('See all Notifications')).click();
+    await flushPromises();
 
     expect(openNewPontoonTabSpy).toHaveBeenCalledWith(
       'https://127.0.0.1/notifications',

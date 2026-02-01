@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import { BottomLink } from '.';
 
@@ -10,13 +10,11 @@ describe('BottomLink', () => {
     expect(screen.getByRole('link')).toHaveTextContent('TEXT');
   });
 
-  it('calls onClick handler', () => {
+  it('calls onClick handler', async () => {
     const onClick = jest.fn();
     render(<BottomLink onClick={onClick} />);
 
-    act(() => {
-      screen.getByRole('link').click();
-    });
+    (await screen.findByRole('link')).click();
 
     expect(onClick).toHaveBeenCalled();
   });

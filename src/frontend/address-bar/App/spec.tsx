@@ -87,10 +87,8 @@ describe('address-bar/App', () => {
       await flushPromises();
     });
 
-    await act(async () => {
-      screen.getByText('Open Some Project dashboard for Czech').click();
-      await flushPromises();
-    });
+    (await screen.findByText('Open Some Project dashboard for Czech')).click();
+    await flushPromises();
 
     expect(openNewPontoonTabSpy).toHaveBeenCalledWith(
       pontoonTeamsProject('https://localhost', { code: 'cs' }, project),
@@ -103,10 +101,10 @@ describe('address-bar/App', () => {
       await flushPromises();
     });
 
-    await act(async () => {
-      screen.getByText('Open Some Project translation view for Czech').click();
-      await flushPromises();
-    });
+    (
+      await screen.findByText('Open Some Project translation view for Czech')
+    ).click();
+    await flushPromises();
 
     expect(openNewPontoonTabSpy).toHaveBeenCalledWith(
       pontoonProjectTranslationView(
@@ -123,12 +121,12 @@ describe('address-bar/App', () => {
       await flushPromises();
     });
 
-    await act(async () => {
-      screen
-        .getByText('Report bug for localization of Some Project to Czech')
-        .click();
-      await flushPromises();
-    });
+    (
+      await screen.findByText(
+        'Report bug for localization of Some Project to Czech',
+      )
+    ).click();
+    await flushPromises();
 
     expect(openNewTab).toHaveBeenCalledWith(
       newLocalizationBug({

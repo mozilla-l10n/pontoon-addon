@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen, within, act } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 
 import { renderInSnakeGameContext } from '../test/SnakeGameContextMock';
 import { GameState } from '../SnakeGameContext';
@@ -39,7 +39,7 @@ describe('SnakeGameInfo', () => {
     expect(within(wrapper()).getByRole('button')).toHaveTextContent('PAUSE');
   });
 
-  it('pause button pauses the game', () => {
+  it('pause button pauses the game', async () => {
     const pauseGame = jest.fn();
     renderInSnakeGameContext({
       children: <SnakeGameInfo />,
@@ -47,9 +47,7 @@ describe('SnakeGameInfo', () => {
       pauseGame,
     });
 
-    act(() => {
-      within(wrapper()).getByText('PAUSE').click();
-    });
+    (await screen.findByText('PAUSE')).click();
 
     expect(pauseGame).toHaveBeenCalled();
   });
@@ -71,7 +69,7 @@ describe('SnakeGameInfo', () => {
     expect(within(wrapper()).getByRole('button')).toHaveTextContent('RESUME');
   });
 
-  it('resume button resumes the game', () => {
+  it('resume button resumes the game', async () => {
     const resumeGame = jest.fn();
     renderInSnakeGameContext({
       children: <SnakeGameInfo />,
@@ -79,9 +77,7 @@ describe('SnakeGameInfo', () => {
       resumeGame,
     });
 
-    act(() => {
-      within(wrapper()).getByText('RESUME').click();
-    });
+    (await screen.findByText('RESUME')).click();
 
     expect(resumeGame).toHaveBeenCalled();
   });

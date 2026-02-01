@@ -1,11 +1,13 @@
 import type { ComponentProps } from 'react';
 import React, { useEffect, useState } from 'react';
 import { marked, Renderer } from 'marked';
-import DOMPurify from 'dompurify';
+import DOMPurifyDefault from 'dompurify';
 import type { DOMNode } from 'html-react-parser';
 import parse, { domToReact, Element } from 'html-react-parser';
 
 import { NativeLink } from '@frontend/commons/components/pontoon/NativeLink';
+
+const DOMPurify = DOMPurifyDefault;
 
 async function renderMarkdown(markdown: string) {
   const renderer = new Renderer();
