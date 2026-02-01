@@ -1,6 +1,6 @@
 import type { Tabs } from 'webextension-polyfill';
 import React from 'react';
-import { render, screen, within, act } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import flushPromises from 'flush-promises';
 
 import * as UtilsApiModule from '@commons/utils';
@@ -135,17 +135,13 @@ describe('NotificationsListItem', () => {
       />,
     );
 
-    await act(async () => {
-      screen.getByTestId('actor').click();
-      await flushPromises();
-    });
+    (await screen.findByTestId('actor')).click();
+    await flushPromises();
     expect(openNewPontoonTabSpy).toHaveBeenCalledTimes(1);
     expect(openNewPontoonTabSpy).toHaveBeenLastCalledWith(actorUrl);
 
-    await act(async () => {
-      screen.getByTestId('target').click();
-      await flushPromises();
-    });
+    (await screen.findByTestId('target')).click();
+    await flushPromises();
     expect(openNewPontoonTabSpy).toHaveBeenCalledTimes(2);
     expect(openNewPontoonTabSpy).toHaveBeenLastCalledWith(targetUrl);
   });
@@ -160,10 +156,8 @@ describe('NotificationsListItem', () => {
       />,
     );
 
-    await act(async () => {
-      screen.getByRole('listitem').click();
-      await flushPromises();
-    });
+    (await screen.findByRole('listitem')).click();
+    await flushPromises();
 
     expect(openNewPontoonTabSpy).toHaveBeenCalledWith(actorUrl);
   });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen, within, act } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 
 import { renderInSnakeGameContext } from '../test/SnakeGameContextMock';
 import { GameState } from '../SnakeGameContext';
@@ -41,7 +41,7 @@ describe('SnakeGameBoard', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('start game button starts the game', () => {
+  it('start game button starts the game', async () => {
     const startGame = jest.fn();
     renderInSnakeGameContext({
       children: <SnakeGameBoard />,
@@ -49,9 +49,7 @@ describe('SnakeGameBoard', () => {
       startGame,
     });
 
-    act(() => {
-      within(wrapper()).getByText('START GAME').click();
-    });
+    (await screen.findByText('START GAME')).click();
 
     expect(startGame).toHaveBeenCalled();
   });
@@ -78,7 +76,7 @@ describe('SnakeGameBoard', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('try again button restarts the game', () => {
+  it('try again button restarts the game', async () => {
     const restartGame = jest.fn();
     renderInSnakeGameContext({
       children: <SnakeGameBoard />,
@@ -86,9 +84,7 @@ describe('SnakeGameBoard', () => {
       restartGame,
     });
 
-    act(() => {
-      within(wrapper()).getByText('TRY AGAIN').click();
-    });
+    (await screen.findByText('TRY AGAIN')).click();
 
     expect(restartGame).toHaveBeenCalled();
   });

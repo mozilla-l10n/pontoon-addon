@@ -1,4 +1,5 @@
 import React from 'react';
+/* eslint-disable react-hooks/refs */
 import { css } from '@emotion/react';
 
 import { Button } from '@frontend/commons/components/pontoon/Button';

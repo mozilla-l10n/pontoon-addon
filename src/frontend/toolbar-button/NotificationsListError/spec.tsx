@@ -1,6 +1,6 @@
 import type { Tabs } from 'webextension-polyfill';
 import React from 'react';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import flushPromises from 'flush-promises';
 
 import * as UtilsApiModule from '@commons/utils';
@@ -35,10 +35,8 @@ describe('NotificationsListError', () => {
     render(<NotificationsListError />);
 
     expect(screen.getByRole('link')).toHaveTextContent('signed in');
-    await act(async () => {
-      screen.getByRole('link').click();
-      await flushPromises();
-    });
+    (await screen.findByRole('link')).click();
+    await flushPromises();
 
     expect(openNewPontoonTabSpy).toHaveBeenCalledWith(signInUrl);
     expect(windowCloseSpy).toHaveBeenCalled();

@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+/* eslint-disable react-hooks/refs */
 import { css } from '@emotion/react';
 import type { IOptions } from 'react-game-snake';
 import { SnakeGame } from 'react-game-snake';

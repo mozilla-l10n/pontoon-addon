@@ -1,13 +1,13 @@
 import React from 'react';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import { PanelListItem } from '.';
 
 describe('PanelListItem', () => {
-  it('has class to style in Firefox', () => {
+  it('has class to style in Firefox', async () => {
     render(<PanelListItem onClick={jest.fn()} />);
 
-    expect(screen.getByRole('listitem')).toHaveClass('panel-list-item');
+    expect(await screen.findByRole('listitem')).toHaveClass('panel-list-item');
   });
 
   it('renders children', () => {
@@ -16,13 +16,11 @@ describe('PanelListItem', () => {
     expect(screen.getByRole('listitem')).toHaveTextContent('Text');
   });
 
-  it('calls the onClick handler', () => {
+  it('calls the onClick handler', async () => {
     const onClick = jest.fn();
     render(<PanelListItem onClick={onClick}>Text</PanelListItem>);
 
-    act(() => {
-      screen.getByText('Text').click();
-    });
+    (await screen.findByText('Text')).click();
 
     expect(onClick).toHaveBeenCalled();
   });

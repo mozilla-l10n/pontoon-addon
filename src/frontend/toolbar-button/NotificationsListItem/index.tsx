@@ -3,7 +3,7 @@ import type { MouseEvent } from 'react';
 import React from 'react';
 import { css } from '@emotion/react';
 import ReactTimeAgo from 'react-time-ago';
-import DOMPurify from 'dompurify';
+import DOMPurifyDefault from 'dompurify';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Linkify from 'react-linkify';
@@ -16,6 +16,8 @@ import { openNewPontoonTab } from '@commons/utils';
 import { Link } from '@frontend/commons/components/pontoon/Link';
 import { NativeLink } from '@frontend/commons/components/pontoon/NativeLink';
 import { colors } from '@frontend/commons/const';
+
+const DOMPurify = DOMPurifyDefault;
 
 const Wrapper: React.FC<
   React.ComponentProps<'li'> & {
@@ -88,11 +90,10 @@ const TimeAgo: React.FC<React.ComponentProps<'div'>> = (props) => (
   />
 );
 
-interface Props
-  extends Pick<
-    StorageContent['notificationsData'][number],
-    'unread' | 'actor' | 'target' | 'verb' | 'description' | 'date_iso'
-  > {
+interface Props extends Pick<
+  StorageContent['notificationsData'][number],
+  'unread' | 'actor' | 'target' | 'verb' | 'description' | 'date_iso'
+> {
   pontoonBaseUrl: string;
 }
 

@@ -46,6 +46,11 @@ const team: StorageContent['team'] = {
   },
 };
 
+const flush = () =>
+  act(async () => {
+    await flushPromises();
+  });
+
 (getPontoonProjectForTheCurrentTab as jest.Mock).mockResolvedValue(undefined);
 (getFromStorage as jest.Mock).mockResolvedValue({
   team,
@@ -68,9 +73,7 @@ afterEach(() => {
 describe('TeamInfo', () => {
   it('renders', async () => {
     render(<TeamInfo />);
-    await act(async () => {
-      await flushPromises();
-    });
+    await flush();
 
     expect(
       within(screen.getByRole('heading', { level: 3 })).getByTestId(
@@ -114,9 +117,7 @@ describe('TeamInfo', () => {
     });
 
     render(<TeamInfo />);
-    await act(async () => {
-      await flushPromises();
-    });
+    await flush();
 
     expect(
       within(screen.getAllByRole('listitem')[0]).getByTestId('label'),
@@ -128,26 +129,22 @@ describe('TeamInfo', () => {
 
   it('team page links work', async () => {
     render(<TeamInfo />);
-    await act(async () => {
-      await flushPromises();
-    });
+    await flush();
 
-    await act(async () => {
-      within(screen.getByRole('heading', { level: 3 }))
-        .getByRole('link')
-        .click();
-      await flushPromises();
-    });
+    (
+      await within(await screen.findByRole('heading', { level: 3 })).findByRole(
+        'link',
+      )
+    ).click();
+    await flushPromises();
 
     expect(openNewPontoonTabSpy).toHaveBeenCalledTimes(1);
     expect(openNewPontoonTabSpy).toHaveBeenLastCalledWith(
       pontoonTeam('https://localhost', team),
     );
 
-    await act(async () => {
-      screen.getByText('Open Czech team page').click();
-      await flushPromises();
-    });
+    (await screen.findByText('Open Czech team page')).click();
+    await flushPromises();
 
     expect(openNewPontoonTabSpy).toHaveBeenCalledTimes(2);
     expect(openNewPontoonTabSpy).toHaveBeenLastCalledWith(
@@ -157,14 +154,11 @@ describe('TeamInfo', () => {
 
   it('string status links work', async () => {
     render(<TeamInfo />);
-    await act(async () => {
-      await flushPromises();
-    });
+    await flush();
 
-    const statusLinks = screen.getAllByRole('listitem');
+    const statusLinks = await screen.findAllByRole('listitem');
 
     const expectedStatuses = [
-      // Activity
       'translated',
       'pretranslated',
       'warnings',
@@ -177,11 +171,10 @@ describe('TeamInfo', () => {
 
     for (const [index, status] of expectedStatuses.entries()) {
       await act(async () => {
-        within(statusLinks[index + 1])
-          .getByRole('link')
-          .click();
+        (await within(statusLinks[index + 1]).findByRole('link')).click();
         await flushPromises();
       });
+
       expect(openNewPontoonTabSpy).toHaveBeenLastCalledWith(
         pontoonSearchStringsWithStatus('https://localhost', team, status),
       );
@@ -196,34 +189,32 @@ describe('TeamInfo', () => {
     });
 
     render(<TeamInfo />);
-    await act(async () => {
-      await flushPromises();
-    });
+    await flush();
 
-    await act(async () => {
-      screen.getByText('Open Firefox dashboard for Czech').click();
-      await flushPromises();
-    });
+    (await screen.findByText('Open Firefox dashboard for Czech')).click();
+    await flushPromises();
+
     expect(openNewPontoonTabSpy).toHaveBeenCalledTimes(1);
     expect(openNewPontoonTabSpy).toHaveBeenLastCalledWith(
       pontoonTeamsProject('https://localhost', team, project),
     );
 
-    await act(async () => {
-      screen.getByText('Open Firefox translation view for Czech').click();
-      await flushPromises();
-    });
+    (
+      await screen.findByText('Open Firefox translation view for Czech')
+    ).click();
+
     expect(openNewPontoonTabSpy).toHaveBeenCalledTimes(2);
     expect(openNewPontoonTabSpy).toHaveBeenLastCalledWith(
       pontoonProjectTranslationView('https://localhost', team, project),
     );
 
-    await act(async () => {
-      screen
-        .getByText('Report bug for localization of Firefox to Czech')
-        .click();
-      await flushPromises();
-    });
+    (
+      await screen.findByRole('link', {
+        name: 'Report bug for localization of Firefox to Czech',
+      })
+    ).click();
+    await flushPromises();
+
     expect(openNewTab).toHaveBeenCalledTimes(1);
     expect(openNewTab).toHaveBeenLastCalledWith(
       newLocalizationBug({ team, url: 'https://firefox.com' }),
