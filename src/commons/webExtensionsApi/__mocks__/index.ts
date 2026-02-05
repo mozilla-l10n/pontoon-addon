@@ -22,8 +22,6 @@ export const { create: createContextMenu, remove: removeContextMenu } = {
   remove: jest.fn(),
 };
 
-export const removeAllContextMenus = jest.fn();
-
 export const browserFamily = jest.fn().mockReturnValue('mozilla');
 
 export const openNewTab = jest.fn();

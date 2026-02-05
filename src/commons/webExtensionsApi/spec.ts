@@ -1,11 +1,6 @@
 /* eslint-disable jest/expect-expect */
 import type { MockzillaDeep } from 'mockzilla';
-import type {
-  Alarms,
-  ExtensionTypes,
-  Tabs,
-  Menus,
-} from 'webextension-polyfill';
+import type { Alarms, ExtensionTypes, Tabs } from 'webextension-polyfill';
 import 'mockzilla-webextension';
 
 import { defaultOptionsFor } from '../data/defaultOptions';
@@ -106,16 +101,6 @@ describe('webExtensionsApi', () => {
   });
 
   it('removeContextMenu', async () => {
-    // Ensure the ID is tracked as created so the implementation calls
-    // `browser.contextMenus.remove` rather than returning early.
-    mockBrowser.contextMenus.create
-      .expect({ id: 'id', title: 'foo' })
-      .andReturn('id');
-    createContextMenu({
-      id: 'id',
-      title: 'foo',
-    } as Menus.CreateCreatePropertiesType);
-
     mockBrowser.contextMenus.remove.expect('id').andResolve();
 
     await removeContextMenu('id');

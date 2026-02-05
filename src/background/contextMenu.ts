@@ -11,7 +11,6 @@ import {
   getFromStorage,
   createContextMenu,
   removeContextMenu,
-  removeAllContextMenus,
   listenToStorageChange,
 } from '@commons/webExtensionsApi';
 import { getOneOption, listenToOptionChange } from '@commons/options';
@@ -49,11 +48,7 @@ async function createContextMenuItems() {
     Object.values(projectsList).length > 0 &&
     typeof team === 'object'
   ) {
-    // Remove all existing context menu items once to avoid repeatedly
-    // calling remove on individual ids, which can race and produce errors.
-    await removeAllContextMenus();
-
-    const parentContextMenuId = await createContextMenu({
+    const parentContextMenuId = await recreateContextMenu({
       id: 'page-context-menu-parent',
       title: 'Pontoon Add-on',
       documentUrlPatterns: Object.values(projectsList)
