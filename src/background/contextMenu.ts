@@ -163,11 +163,11 @@ async function recreateContextMenu(
 ): Promise<number | string> {
   try {
     await removeContextMenu(contextMenuItem.id);
-  } catch (error) {
-    console.info(
-      `Could not remove context menu id='${contextMenuItem.id}' title='${contextMenuItem.title}'. Most likely it did not exist.`,
-      error,
-    );
+  } catch {
+    // Intentionally ignored:
+    // - parent menu already removed (children auto-removed)
+    // - menu removed by a parallel rebuild
+    // - Firefox races
   }
   return createContextMenu(contextMenuItem);
 }
