@@ -193,5 +193,17 @@ export function getManifestFor(
     web_accessible_resources: [
       'content-scripts/pontoon-addon-promotion-in-page.js',
     ],
+    ...(forMozilla
+      ? {
+          chrome_settings_overrides: {
+            search_provider: {
+              name: 'Pontoon',
+              keyword: '@pontoon',
+              search_url: 'https://pontoon.mozilla.org/search',
+              search_url_get_params: 'search={searchTerms}',
+            },
+          },
+        }
+      : {}),
   };
 }
