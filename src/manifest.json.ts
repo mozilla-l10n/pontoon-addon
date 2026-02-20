@@ -138,7 +138,7 @@ export function getManifestFor(
           ]
         : []),
       `${DEFAULT_PONTOON_BASE_URL}/*`,
-      'https://flod.org/*',
+      'https://mozilla-l10n.github.io/*',
       ...projectsListData
         .flatMap((project) => project.domains)
         .map((domain) => `https://${domain}/*`),
