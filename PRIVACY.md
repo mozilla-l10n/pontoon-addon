@@ -14,9 +14,9 @@ Pontoon Add-on communicates with the selected Pontoon server (default is pontoon
 
 When communicating with the selected Pontoon server, Pontoon Add-on adds `utm_source` parameters to the URL addresses, with a generic value common to all users to distinguish automatically generated traffic.
 
-Apart from the selected Pontoon server, Pontoon Add-on downloads data from the following servers in non-identifiable manner:
+Apart from the selected Pontoon server, Pontoon Add-on downloads data from the following URLs in non-identifiable manner:
 
-- flod.org
+- mozilla-l10n.github.io
 
 More detailed information about the data downloaded by Pontoon Add-on can be found on the [Data sources](https://github.com/mozilla-l10n/pontoon-addon/wiki/Data) page. You are also welcome to read the [terms and policies](https://pontoon.mozilla.org/terms/) of the default Pontoon server.
 

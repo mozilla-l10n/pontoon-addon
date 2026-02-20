@@ -29,5 +29,5 @@ export function markAllNotificationsAsRead(baseUrl: string): string {
 }
 
 export function bugzillaTeamComponents(): string {
-  return 'https://flod.org/mozilla-l10n-query/?bugzilla=product';
+  return 'https://mozilla-l10n.github.io/mozilla-l10n-query/?bugzilla=product';
 }
