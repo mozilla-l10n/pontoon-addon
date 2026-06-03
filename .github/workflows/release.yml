@@ -42,7 +42,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Clone repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
       - name: Set release commit author
@@ -52,7 +52,7 @@ jobs:
       - name: Bump version
         run: make bump_version_in_container bump='${{ inputs.version_component_to_bump }}' # also creates the commit and tag
       - name: Push release commit
-        uses: ad-m/github-push-action@4cc74773234f74829a8c21bc4d69dd4be9cfa599 # v1.1.0
+        uses: ad-m/github-push-action@881a6320fdb16eb5318c5054f31c218aec2b324c # v1.3.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
