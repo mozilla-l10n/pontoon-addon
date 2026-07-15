@@ -102,8 +102,8 @@
     "tsconfig-paths-webpack-plugin": "^4.2.0",
     "typescript": "~5.9",
     "web-ext-plugin": "^2.13.0",
-    "webpack": "^5.108.3",
-    "webpack-cli": "^7.1.0"
+    "webpack": "^5.108.4",
+    "webpack-cli": "^7.2.1"
   },
   "overrides": {
     "mockzilla-webextension": {
