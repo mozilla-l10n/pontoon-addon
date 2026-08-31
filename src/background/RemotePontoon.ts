@@ -122,12 +122,17 @@ export async function refreshData(context: {
   } else if (context.event === 'project list') {
     await updateProjectsList();
   }
-  await Promise.all([
+  const results = await Promise.allSettled([
     updateNotificationsData(),
     updateLatestTeamActivity(),
     updateTeam(),
     updateTeamsList(),
   ]);
+  for (const result of results) {
+    if (result.status === 'rejected') {
+      console.error(result.reason);
+    }
+  }
 }
 
 async function updateNotificationsIfThereAreNew(pageContent: string) {
@@ -205,16 +210,37 @@ async function updateLatestTeamActivity() {
   }
 }
 
+async function fetchBugzillaComponents(): Promise<{
+  [code: string]: string;
+}> {
+  const response = await httpClient.fetch(bugzillaTeamComponents());
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch Bugzilla components: ${response.status} ${response.statusText}`,
+    );
+  }
+  const contentType = response.headers.get('content-type') ?? '';
+  if (!contentType.includes('json')) {
+    throw new Error(
+      `Unexpected content type for Bugzilla components: ${contentType}`,
+    );
+  }
+  return (await response.json()) as { [code: string]: string };
+}
+
 async function updateTeam(): Promise<StorageContent['team']> {
   const teamCode = await getOneOption('locale_team');
-  const [pontoonData, bugzillaComponentsResponse] = await Promise.all([
+  const [pontoonData, bugzillaComponents] = await Promise.all([
     pontoonRestClient.getTeamInfo(teamCode),
-    httpClient.fetch(bugzillaTeamComponents()),
+    // The Bugzilla component is only used to build a "report a bug" link, so
+    // failing to load it should not prevent the team stats from being stored.
+    fetchBugzillaComponents().catch((error) => {
+      console.error(error);
+      return undefined;
+    }),
   ]);
-  const bugzillaComponents = (await bugzillaComponentsResponse.json()) as {
-    [code: string]: string;
-  };
 
+  const previousTeam = await getOneFromStorage('team');
   const team: StorageContent['team'] = {
     code: pontoonData.code,
     name: pontoonData.name,
@@ -227,7 +253,14 @@ async function updateTeam(): Promise<StorageContent['team']> {
       unreviewedStrings: pontoonData.unreviewed_strings,
       totalStrings: pontoonData.total_strings,
     },
-    bz_component: bugzillaComponents[pontoonData.code],
+    bz_component:
+      bugzillaComponents !== undefined
+        ? bugzillaComponents[pontoonData.code]
+        : // The list failed to load: keep the previously known component
+          // rather than dropping the link, but only for the same team.
+          previousTeam?.code === pontoonData.code
+          ? previousTeam.bz_component
+          : undefined,
   };
 
   await saveToStorage({ team });

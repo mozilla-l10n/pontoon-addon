@@ -42,7 +42,8 @@ export interface StorageContent {
       unreviewedStrings: number;
       totalStrings: number;
     };
-    bz_component: string;
+    // undefined is used when locale doesn't have a Bugzilla component.
+    bz_component: string | undefined;
   };
   teamsList: {
     [code: string]: string;

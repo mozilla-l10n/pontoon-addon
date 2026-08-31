@@ -45,7 +45,7 @@ describe('pontoonRestClient', () => {
 
       expect(mockGetOneOption).toHaveBeenCalledWith('pontoon_base_url');
       expect(mockFetch).toHaveBeenCalledWith(
-        'https://pontoon.example.com/api/v2/locales/cs',
+        'https://pontoon.example.com/api/v2/locales/cs/',
       );
       expect(result).toEqual(mockTeamData);
     });
@@ -62,7 +62,7 @@ describe('pontoonRestClient', () => {
       );
 
       expect(mockFetch).toHaveBeenCalledWith(
-        'https://pontoon.example.com/api/v2/locales/blah',
+        'https://pontoon.example.com/api/v2/locales/blah/',
       );
     });
 

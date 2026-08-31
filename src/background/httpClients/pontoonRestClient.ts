@@ -33,7 +33,7 @@ function getPontoonBaseUrl(): Promise<string> {
 export const pontoonRestClient = {
   async getTeamInfo(locale_code: string): Promise<GetTeamInfoResponse> {
     const baseUrl = await getPontoonBaseUrl();
-    const response = await fetch(`${baseUrl}/api/v2/locales/${locale_code}`);
+    const response = await fetch(`${baseUrl}/api/v2/locales/${locale_code}/`);
     if (!response.ok) {
       const errorMessage = `Failed to fetch locale from Pontoon API: ${response.status} ${response.statusText}`;
       throw new Error(errorMessage);
