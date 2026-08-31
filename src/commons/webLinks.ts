@@ -201,7 +201,6 @@ export function newLocalizationBug({
     .expand({
       q: {
         product: 'Mozilla Localizations',
-        // Let Bugzilla prompt for the component if it is unknown.
         ...(team.bz_component ? { component: team.bz_component } : {}),
         short_desc:
           selectedText && url

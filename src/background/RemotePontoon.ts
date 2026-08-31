@@ -122,7 +122,6 @@ export async function refreshData(context: {
   } else if (context.event === 'project list') {
     await updateProjectsList();
   }
-  // One failing data source must not prevent the others from being stored.
   const results = await Promise.allSettled([
     updateNotificationsData(),
     updateLatestTeamActivity(),
@@ -222,8 +221,6 @@ async function fetchBugzillaComponents(): Promise<{
   }
   const contentType = response.headers.get('content-type') ?? '';
   if (!contentType.includes('json')) {
-    // Guards against an endpoint silently starting to serve an HTML page with
-    // a 200 status, which would otherwise only surface as a JSON parse error.
     throw new Error(
       `Unexpected content type for Bugzilla components: ${contentType}`,
     );
@@ -236,7 +233,7 @@ async function updateTeam(): Promise<StorageContent['team']> {
   const [pontoonData, bugzillaComponents] = await Promise.all([
     pontoonRestClient.getTeamInfo(teamCode),
     // The Bugzilla component is only used to build a "report a bug" link, so
-    // failing to load it must not prevent the team stats from being stored.
+    // failing to load it should not prevent the team stats from being stored.
     fetchBugzillaComponents().catch((error) => {
       console.error(error);
       return undefined;
