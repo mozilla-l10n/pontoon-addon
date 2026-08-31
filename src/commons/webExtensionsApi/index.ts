@@ -42,7 +42,8 @@ export interface StorageContent {
       unreviewedStrings: number;
       totalStrings: number;
     };
-    bz_component: string;
+    // Not every locale has a Bugzilla component.
+    bz_component: string | undefined;
   };
   teamsList: {
     [code: string]: string;

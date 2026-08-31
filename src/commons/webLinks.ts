@@ -193,7 +193,7 @@ export function newLocalizationBug({
   selectedText,
   url,
 }: {
-  team: { code: string; bz_component: string };
+  team: { code: string; bz_component: string | undefined };
   selectedText?: string;
   url?: string;
 }): string {
@@ -201,7 +201,8 @@ export function newLocalizationBug({
     .expand({
       q: {
         product: 'Mozilla Localizations',
-        component: team.bz_component,
+        // Let Bugzilla prompt for the component if it is unknown.
+        ...(team.bz_component ? { component: team.bz_component } : {}),
         short_desc:
           selectedText && url
             ? `[${

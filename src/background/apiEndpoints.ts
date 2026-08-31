@@ -29,5 +29,8 @@ export function markAllNotificationsAsRead(baseUrl: string): string {
 }
 
 export function bugzillaTeamComponents(): string {
-  return 'https://mozilla-l10n.github.io/mozilla-l10n-query/?bugzilla=product';
+  // Link directly to the pre-generated JSON. The '?bugzilla=product' query on
+  // the site root only redirects here via client side JavaScript, which fetch()
+  // does not execute, so it would return the HTML page instead.
+  return 'https://mozilla-l10n.github.io/mozilla-l10n-query/api/bugzilla/product.json';
 }
