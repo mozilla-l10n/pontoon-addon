@@ -240,6 +240,7 @@ async function updateTeam(): Promise<StorageContent['team']> {
     }),
   ]);
 
+  const previousTeam = await getOneFromStorage('team');
   const team: StorageContent['team'] = {
     code: pontoonData.code,
     name: pontoonData.name,
@@ -253,9 +254,13 @@ async function updateTeam(): Promise<StorageContent['team']> {
       totalStrings: pontoonData.total_strings,
     },
     bz_component:
-      bugzillaComponents?.[pontoonData.code] ??
-      // Keep the previously known component rather than dropping the link.
-      (await getOneFromStorage('team'))?.bz_component,
+      bugzillaComponents !== undefined
+        ? bugzillaComponents[pontoonData.code]
+        : // The list failed to load: keep the previously known component
+          // rather than dropping the link, but only for the same team.
+          previousTeam?.code === pontoonData.code
+          ? previousTeam.bz_component
+          : undefined,
   };
 
   await saveToStorage({ team });
