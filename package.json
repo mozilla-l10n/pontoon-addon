@@ -102,7 +102,7 @@
     "tsconfig-paths-webpack-plugin": "^4.2.0",
     "typescript": "~5.9",
     "web-ext-plugin": "^2.13.0",
-    "webpack": "^5.110.1",
+    "webpack": "^5.111.1",
     "webpack-cli": "^7.2.3"
   },
   "overrides": {
